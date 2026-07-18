@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block titulo %}Iniciar sesión{% endblock %}
+{% block barra_superior %}{% endblock %}
+
+{% block contenido %}
+<div class="min-h-[85vh] flex flex-col items-center justify-center">
+  <div class="w-full max-w-[360px] bg-surface-lowest rounded-xl shadow-card border border-outline-variant p-8 flex flex-col items-center">
+
+    {# Identidad de marca #}
+    <div class="flex flex-col items-center mb-8">
+      <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mb-4">
+        <span class="material-symbols-outlined text-primary-fg" style="font-size:32px">apartment</span>
+      </div>
+      <h1 class="font-display text-2xl font-bold text-primary tracking-tight">{{ nombre_empresa|default:"VATISHE" }}</h1>
+      <p class="text-xs font-bold uppercase tracking-widest text-ink-variant mt-1">Gestión de apartamentos</p>
+    </div>
+
+    {% if form.errors %}
+      <div class="w-full mb-4 rounded-lg bg-danger-container text-danger-fg px-3 py-2 text-sm font-medium">
+        Usuario o contraseña incorrectos. Verifique sus credenciales.
+      </div>
+    {% endif %}
+
+    <form method="post" class="w-full space-y-5">
+      {% csrf_token %}
+
+      <div class="flex flex-col space-y-1.5">
+        <label class="form-label mb-0" for="id_username">Usuario</label>
+        <input class="form-input h-12" id="id_username" name="username" type="text"
+               placeholder="nombre@ejemplo.com" autocomplete="username" autofocus required>
+      </div>
+
+      <div class="flex flex-col space-y-1.5">
+        <label class="form-label mb-0" for="id_password">Contraseña</label>
+        <div class="relative">
+          <input class="form-input h-12 pr-12" id="id_password" name="password" type="password"
+                 placeholder="••••••••" autocomplete="current-password" required>
+          <button type="button" data-toggle-password="id_password"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-ink-variant hover:text-primary transition-colors min-h-[44px] flex items-center"
+                  aria-label="Mostrar u ocultar contraseña">
+            <span class="material-symbols-outlined" style="font-size:20px">visibility</span>
+          </button>
+        </div>
+      </div>
+
+      <input type="hidden" name="next" value="{{ next }}">
+
+      <div class="pt-1">
+        <button type="submit" class="btn-primary w-full h-12">Ingresar</button>
+      </div>
+    </form>
+
+    <div class="mt-8">
+      <a class="text-sm text-ink-variant hover:text-primary transition-colors"
+         href="{% url 'cuentas:password_reset' %}">¿Olvidó su contraseña?</a>
+    </div>
+  </div>
+
+  <footer class="mt-8 text-xs font-bold uppercase tracking-widest text-ink-variant">
+    {{ nombre_empresa|default:"VATISHE S.R.L." }} © {% now "Y" %}
+  </footer>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.querySelectorAll('[data-toggle-password]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var input = document.getElementById(btn.dataset.togglePassword);
+      var icon = btn.querySelector('.material-symbols-outlined');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = 'visibility_off';
+      } else {
+        input.type = 'password';
+        icon.textContent = 'visibility';
+      }
+    });
+  });
+</script>
+{% endblock %}

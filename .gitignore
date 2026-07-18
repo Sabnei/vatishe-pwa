@@ -216,3 +216,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- VATISHE ---
+/staticfiles/
+/media/
+/static/css/vatishe.css
+/bin/tailwindcss
+
+# Claude
+.claude

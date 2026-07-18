@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{# Layout del Administrador: top bar + barra de navegación inferior. #}
+
+{% block barra_titulo %}VATISHE Admin{% endblock %}
+
+{% block navegacion_inferior %}
+<nav class="sticky bottom-0 z-40 bg-surface-lowest border-t border-outline-variant flex justify-around items-center h-20 px-2">
+  {% with a=nav_activo %}
+  <a href="{% url 'core:inicio' %}"
+     class="flex flex-col items-center gap-1 min-w-[60px] py-1 {% if a == 'inicio' %}text-accent{% else %}text-ink-variant hover:text-primary{% endif %}">
+    <span class="material-symbols-outlined" {% if a == 'inicio' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>dashboard</span>
+    <span class="text-[10px] font-bold uppercase tracking-wide">Panel</span>
+  </a>
+  <a href="{% url 'cuentas:gestion_usuarios' %}"
+     class="flex flex-col items-center gap-1 min-w-[60px] py-1 {% if a == 'inquilinos' %}text-accent{% else %}text-ink-variant hover:text-primary{% endif %}">
+    <span class="material-symbols-outlined" {% if a == 'inquilinos' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>group</span>
+    <span class="text-[10px] font-bold uppercase tracking-wide">Inquilinos</span>
+  </a>
+  <a href="{% url 'core:proximamente' %}?s=Apartamentos"
+     class="flex flex-col items-center gap-1 min-w-[60px] py-1 {% if a == 'apartamentos' %}text-accent{% else %}text-ink-variant hover:text-primary{% endif %}">
+    <span class="material-symbols-outlined" {% if a == 'apartamentos' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>apartment</span>
+    <span class="text-[10px] font-bold uppercase tracking-wide">Aptos.</span>
+  </a>
+  <a href="{% url 'core:proximamente' %}?s=Reportes"
+     class="flex flex-col items-center gap-1 min-w-[60px] py-1 {% if a == 'reportes' %}text-accent{% else %}text-ink-variant hover:text-primary{% endif %}">
+    <span class="material-symbols-outlined" {% if a == 'reportes' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>bar_chart</span>
+    <span class="text-[10px] font-bold uppercase tracking-wide">Reportes</span>
+  </a>
+  {% endwith %}
+</nav>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>{% block titulo %}VATISHE{% endblock %} · {{ nombre_empresa }}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{% static 'css/vatishe.css' %}">
+  {% block head_extra %}{% endblock %}
+</head>
+<body class="min-h-full bg-surface text-ink font-sans antialiased">
+  <div class="mx-auto w-full max-w-app min-h-screen flex flex-col bg-surface relative">
+
+    {% block barra_superior %}
+      {% if user.is_authenticated %}
+      <header class="sticky top-0 z-40 bg-primary text-primary-fg h-16 px-4 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined" style="font-size:26px">apartment</span>
+          <span class="font-display text-lg font-bold tracking-tight">{% block barra_titulo %}{{ nombre_empresa }}{% endblock %}</span>
+        </div>
+        <div class="flex items-center gap-1">
+          {% block barra_acciones %}{% endblock %}
+          <form method="post" action="{% url 'cuentas:logout' %}" class="flex">
+            {% csrf_token %}
+            <button type="submit" title="Cerrar sesión"
+                    class="text-primary-fg/80 hover:text-primary-fg flex items-center min-h-[44px] px-2">
+              <span class="material-symbols-outlined">logout</span>
+            </button>
+          </form>
+        </div>
+      </header>
+      {% endif %}
+    {% endblock %}
+
+    {% if messages %}
+      <div class="px-4 pt-3 space-y-2">
+        {% for message in messages %}
+          <div class="rounded-lg px-3 py-2 text-sm font-medium
+            {% if message.tags == 'error' %}bg-danger-container text-danger-fg
+            {% elif message.tags == 'success' %}bg-success-container text-success-fg
+            {% elif message.tags == 'warning' %}bg-warning-container text-warning-fg
+            {% else %}bg-surface-high text-ink-variant{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <main class="flex-1 px-4 py-5 {% block main_pb %}{% endblock %}">
+      {% block contenido %}{% endblock %}
+    </main>
+
+    {% block navegacion_inferior %}{% endblock %}
+  </div>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

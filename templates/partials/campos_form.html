@@ -1,0 +1,18 @@
+{% comment %}
+Renderiza los campos de un formulario con el estilo del design system.
+Uso: incluir con  with form=form  desde la plantilla contenedora.
+{% endcomment %}
+{% if form.non_field_errors %}
+  <div class="mb-4 rounded-lg bg-danger-container text-danger-fg px-3 py-2 text-sm font-medium">
+    {% for e in form.non_field_errors %}{{ e }}{% endfor %}
+  </div>
+{% endif %}
+{% for field in form.visible_fields %}
+  <div class="mb-4">
+    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>
+    {{ field }}
+    {% if field.help_text %}<p class="mt-1 text-xs text-ink-variant">{{ field.help_text|safe }}</p>{% endif %}
+    {% for e in field.errors %}<p class="mt-1 text-xs font-medium text-danger">{{ e }}</p>{% endfor %}
+  </div>
+{% endfor %}
+{% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}

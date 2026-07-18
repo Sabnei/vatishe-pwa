@@ -1,0 +1,20 @@
+{% extends "base_admin.html" %}
+{% block titulo %}Nuevo inquilino{% endblock %}
+
+{% block contenido %}
+<div class="space-y-4">
+  <div class="flex items-center gap-2">
+    <a href="{% url 'cuentas:gestion_usuarios' %}" class="text-ink-variant hover:text-primary flex items-center">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+    <h1 class="font-display text-2xl font-bold text-primary">Nuevo inquilino</h1>
+  </div>
+
+  <form method="post" class="card p-5">
+    {% csrf_token %}
+    <p class="form-label">Datos de acceso</p>
+    {% include "partials/campos_form.html" with form=form %}
+    <button type="submit" class="btn-primary w-full h-12 mt-2">Crear inquilino</button>
+  </form>
+</div>
+{% endblock %}

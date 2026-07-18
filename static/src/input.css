@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Componentes reutilizables del design system VATISHE Core. */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded font-sans text-sm font-semibold
+           px-4 py-2.5 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40
+           disabled:opacity-50 disabled:pointer-events-none min-h-[44px];
+  }
+  /* CTA principal: naranja de acento con texto blanco (design system VATISHE Core). */
+  .btn-primary {
+    @apply btn bg-accent text-accent-fg shadow-sm hover:opacity-90 active:scale-[0.98];
+  }
+  /* Botón navy sólido para acciones estructurales secundarias fuertes. */
+  .btn-navy {
+    @apply btn bg-primary text-primary-fg hover:bg-primary/90;
+  }
+  /* Secundario: borde navy con texto navy. */
+  .btn-secondary {
+    @apply btn border border-primary text-primary bg-transparent hover:bg-primary/5;
+  }
+  .btn-danger {
+    @apply btn bg-danger text-white hover:bg-danger/90;
+  }
+
+  .card {
+    @apply bg-surface-lowest border border-outline-variant/60 rounded-lg shadow-card;
+  }
+
+  .form-label {
+    @apply block text-xs font-bold uppercase tracking-wide text-ink-variant mb-1.5;
+  }
+  .form-input {
+    @apply w-full rounded border border-outline-variant bg-surface-lowest px-3 py-2.5 text-base
+           text-ink placeholder:text-outline focus:border-primary focus:border-2 focus:outline-none
+           min-h-[44px];
+  }
+
+  /* Chips de estado (pagado / pendiente / vencido / con multa). */
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+  .chip-success { @apply chip bg-success-container text-success-fg; }
+  .chip-warning { @apply chip bg-warning-container text-warning-fg; }
+  .chip-danger  { @apply chip bg-danger-container text-danger-fg; }
+  .chip-neutral { @apply chip bg-surface-high text-ink-variant; }
+}

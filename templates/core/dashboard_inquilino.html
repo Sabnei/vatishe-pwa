@@ -1,0 +1,53 @@
+{% extends "base_inquilino.html" %}
+{% block titulo %}Inicio{% endblock %}
+{% block main_pb %}pb-4{% endblock %}
+
+{% block contenido %}
+<div class="space-y-6">
+
+  <section>
+    <p class="form-label mb-1">Bienvenido de nuevo,</p>
+    <h2 class="font-display text-2xl font-bold text-primary">{{ user.get_full_name|default:user.username }}</h2>
+  </section>
+
+  {# Tarjeta de saldo. Los datos reales se conectan en la Fase 4 (cobros). #}
+  <div class="card p-6">
+    <div class="flex justify-between items-start mb-4">
+      <p class="form-label mb-0">Mi saldo pendiente</p>
+      <span class="chip-neutral">Sin datos aún</span>
+    </div>
+    <p class="font-display text-4xl font-bold text-primary mb-2">₡ —</p>
+    <div class="flex items-center gap-2 text-ink-variant">
+      <span class="material-symbols-outlined" style="font-size:18px">info</span>
+      <p class="text-sm">El detalle de cobros estará disponible próximamente.</p>
+    </div>
+  </div>
+
+  <section class="space-y-3">
+    <h3 class="font-display text-lg font-semibold text-primary">Accesos</h3>
+    <div class="card divide-y divide-outline-variant/60">
+      <a href="{% url 'cuentas:mi_perfil' %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
+        <span class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary">person</span>
+          <span class="font-semibold text-ink">Mi perfil</span>
+        </span>
+        <span class="material-symbols-outlined text-outline">chevron_right</span>
+      </a>
+      <a href="{% url 'core:proximamente' %}?s=Abonos" class="flex items-center justify-between p-4 hover:bg-surface-low">
+        <span class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary">account_balance_wallet</span>
+          <span class="font-semibold text-ink">Registrar abono</span>
+        </span>
+        <span class="chip-neutral">Próximamente</span>
+      </a>
+      <a href="{% url 'core:proximamente' %}?s=Reportar avería" class="flex items-center justify-between p-4 hover:bg-surface-low">
+        <span class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary">build</span>
+          <span class="font-semibold text-ink">Reportar avería</span>
+        </span>
+        <span class="chip-neutral">Próximamente</span>
+      </a>
+    </div>
+  </section>
+</div>
+{% endblock %}

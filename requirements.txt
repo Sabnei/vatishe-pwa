@@ -1,0 +1,23 @@
+# --- Núcleo ---
+Django>=5.1,<5.2
+python-dotenv>=1.0
+
+# --- Base de datos (Supabase / PostgreSQL) ---
+dj-database-url>=2.2
+psycopg2-binary>=2.9
+
+# --- Archivos estáticos y almacenamiento (Supabase Storage / S3) ---
+whitenoise>=6.7
+django-storages>=1.14
+boto3>=1.34
+
+# --- Imágenes (compresión de comprobantes a <=1 MB) ---
+Pillow>=10.4
+
+# --- Reportes PDF ---
+# WeasyPrint requiere librerías de sistema (libpango, libcairo, libgdk-pixbuf);
+# ver Dockerfile. En Windows/algunos entornos locales puede omitirse el PDF.
+WeasyPrint>=62.3
+
+# --- Servidor de producción ---
+gunicorn>=22.0

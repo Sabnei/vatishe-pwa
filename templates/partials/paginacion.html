@@ -1,0 +1,25 @@
+{% comment %}
+Controles de paginación. Conserva los parámetros de búsqueda actuales.
+Requiere page_obj / paginator (los aporta ListView con paginate_by).
+{% endcomment %}
+{% if is_paginated %}
+<nav class="flex items-center justify-between pt-2" aria-label="Paginación">
+  {% if page_obj.has_previous %}
+    <a href="?{% if q %}q={{ q|urlencode }}&{% endif %}{% if estado %}estado={{ estado }}&{% endif %}page={{ page_obj.previous_page_number }}"
+       class="btn-secondary">Anterior</a>
+  {% else %}
+    <span class="btn-secondary opacity-40 pointer-events-none">Anterior</span>
+  {% endif %}
+
+  <span class="text-sm text-ink-variant">
+    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+  </span>
+
+  {% if page_obj.has_next %}
+    <a href="?{% if q %}q={{ q|urlencode }}&{% endif %}{% if estado %}estado={{ estado }}&{% endif %}page={{ page_obj.next_page_number }}"
+       class="btn-secondary">Siguiente</a>
+  {% else %}
+    <span class="btn-secondary opacity-40 pointer-events-none">Siguiente</span>
+  {% endif %}
+</nav>
+{% endif %}

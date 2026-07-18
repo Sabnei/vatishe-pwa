@@ -1,0 +1,62 @@
+{% extends "base_admin.html" %}
+{% block titulo %}Inquilinos{% endblock %}
+
+{% block contenido %}
+<div class="space-y-4">
+
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="font-display text-2xl font-bold text-primary">Inquilinos</h1>
+      <p class="text-sm text-ink-variant">{{ total_activos }} activo{{ total_activos|pluralize }}</p>
+    </div>
+    <a href="{% url 'cuentas:nuevo_inquilino' %}" class="btn-primary">
+      <span class="material-symbols-outlined" style="font-size:20px">person_add</span>
+      Nuevo
+    </a>
+  </div>
+
+  {# Búsqueda y filtro #}
+  <form method="get" class="space-y-2">
+    <div class="relative">
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" style="font-size:20px">search</span>
+      <input type="text" name="q" value="{{ q }}" placeholder="Buscar por nombre, usuario o correo"
+             class="form-input pl-10">
+    </div>
+    <div class="flex gap-2">
+      <select name="estado" class="form-input" onchange="this.form.submit()">
+        <option value="" {% if estado == "" %}selected{% endif %}>Todos</option>
+        <option value="activos" {% if estado == "activos" %}selected{% endif %}>Activos</option>
+        <option value="inactivos" {% if estado == "inactivos" %}selected{% endif %}>Inactivos</option>
+      </select>
+      <button type="submit" class="btn-secondary">Filtrar</button>
+    </div>
+  </form>
+
+  {# Listado #}
+  <div class="card divide-y divide-outline-variant/60">
+    {% for inq in inquilinos %}
+      <a href="{% url 'cuentas:perfil_inquilino_admin' inq.pk %}" class="flex items-center gap-3 p-4 hover:bg-surface-low">
+        <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary shrink-0">
+          <span class="material-symbols-outlined">person</span>
+        </div>
+        <div class="min-w-0 flex-1">
+          <p class="font-semibold text-ink truncate">{{ inq.get_full_name|default:inq.username }}</p>
+          <p class="text-sm text-ink-variant truncate">{{ inq.email }}</p>
+        </div>
+        {% if inq.is_active %}
+          <span class="chip-success">Activo</span>
+        {% else %}
+          <span class="chip-neutral">Inactivo</span>
+        {% endif %}
+      </a>
+    {% empty %}
+      <div class="p-8 text-center text-ink-variant">
+        <span class="material-symbols-outlined mb-2" style="font-size:36px">group_off</span>
+        <p class="text-sm">No hay inquilinos que coincidan con la búsqueda.</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% include "partials/paginacion.html" %}
+</div>
+{% endblock %}

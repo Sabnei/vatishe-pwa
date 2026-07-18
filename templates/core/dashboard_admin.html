@@ -1,0 +1,75 @@
+{% extends "base_admin.html" %}
+{% block titulo %}Panel de administración{% endblock %}
+{% block main_pb %}pb-4{% endblock %}
+
+{% block contenido %}
+<div class="space-y-6">
+
+  {# Métricas (2x2). Las no vivas se conectan en Fases 3-4. #}
+  <section class="grid grid-cols-2 gap-4">
+    <div class="card p-4">
+      <p class="form-label mb-1">Inquilinos activos</p>
+      <div class="flex items-end justify-between">
+        <span class="font-display text-4xl font-bold text-primary">{{ total_inquilinos }}</span>
+        <span class="material-symbols-outlined text-outline">group</span>
+      </div>
+    </div>
+    <div class="card p-4">
+      <p class="form-label mb-1">Apartamentos</p>
+      <div class="flex items-end justify-between">
+        <span class="font-display text-4xl font-bold text-outline-variant">—</span>
+        <span class="material-symbols-outlined text-outline">apartment</span>
+      </div>
+    </div>
+    <div class="card p-4">
+      <p class="form-label mb-1">Cobros pendientes</p>
+      <div class="flex items-end justify-between">
+        <span class="font-display text-4xl font-bold text-outline-variant">—</span>
+        <span class="material-symbols-outlined text-outline">schedule</span>
+      </div>
+    </div>
+    <div class="card p-4">
+      <p class="form-label mb-1">Por verificar</p>
+      <div class="flex items-end justify-between">
+        <span class="font-display text-4xl font-bold text-outline-variant">—</span>
+        <span class="material-symbols-outlined text-outline">receipt_long</span>
+      </div>
+    </div>
+  </section>
+
+  {# Accesos rápidos a los módulos disponibles. #}
+  <section class="space-y-3">
+    <h2 class="font-display text-lg font-semibold text-primary">Gestión</h2>
+    <div class="card divide-y divide-outline-variant/60">
+      <a href="{% url 'cuentas:gestion_usuarios' %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
+        <span class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary">group</span>
+          <span class="font-semibold text-ink">Inquilinos y usuarios</span>
+        </span>
+        <span class="material-symbols-outlined text-outline">chevron_right</span>
+      </a>
+      <a href="{% url 'core:proximamente' %}?s=Apartamentos" class="flex items-center justify-between p-4 hover:bg-surface-low">
+        <span class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary">apartment</span>
+          <span class="font-semibold text-ink">Apartamentos</span>
+        </span>
+        <span class="chip-neutral">Próximamente</span>
+      </a>
+      <a href="{% url 'core:proximamente' %}?s=Reportes" class="flex items-center justify-between p-4 hover:bg-surface-low">
+        <span class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary">bar_chart</span>
+          <span class="font-semibold text-ink">Reportes</span>
+        </span>
+        <span class="chip-neutral">Próximamente</span>
+      </a>
+      <a href="{% url 'admin:index' %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
+        <span class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary">settings</span>
+          <span class="font-semibold text-ink">Administración avanzada (Django)</span>
+        </span>
+        <span class="material-symbols-outlined text-outline">chevron_right</span>
+      </a>
+    </div>
+  </section>
+</div>
+{% endblock %}

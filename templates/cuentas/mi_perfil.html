@@ -1,0 +1,30 @@
+{% extends "base_inquilino.html" %}
+{% block titulo %}Mi perfil{% endblock %}
+{% block main_pb %}pb-4{% endblock %}
+
+{% block contenido %}
+<div class="space-y-4">
+  <div class="flex flex-col items-center py-2">
+    <div class="w-20 h-20 rounded-full bg-primary flex items-center justify-center mb-3">
+      <span class="material-symbols-outlined text-primary-fg" style="font-size:40px">person</span>
+    </div>
+    <h1 class="font-display text-xl font-bold text-primary">{{ user.get_full_name|default:user.username }}</h1>
+    <p class="text-sm text-ink-variant">{{ user.email }}</p>
+  </div>
+
+  <form method="post" class="card p-5">
+    {% csrf_token %}
+    <p class="form-label">Datos de contacto</p>
+    {% include "partials/campos_form.html" with form=form %}
+    <button type="submit" class="btn-primary w-full h-12 mt-2">Guardar cambios</button>
+  </form>
+
+  <a href="{% url 'cuentas:password_change' %}" class="card flex items-center justify-between p-4 hover:bg-surface-low">
+    <span class="flex items-center gap-3">
+      <span class="material-symbols-outlined text-primary">password</span>
+      <span class="font-semibold text-ink">Cambiar contraseña</span>
+    </span>
+    <span class="material-symbols-outlined text-outline">chevron_right</span>
+  </a>
+</div>
+{% endblock %}

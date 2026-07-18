@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block titulo %}Inicio{% endblock %}
+
+{% block contenido %}
+<section class="space-y-5">
+  <div>
+    <p class="text-xs font-bold uppercase tracking-wide text-ink-variant">Bienvenido</p>
+    <h1 class="font-display text-2xl font-bold text-ink">Hola, {{ user.get_full_name|default:user.username }}</h1>
+    <p class="mt-1 text-sm text-ink-variant">
+      Rol: <span class="chip-neutral">{{ user.get_rol_display }}</span>
+    </p>
+  </div>
+
+  <div class="card p-4">
+    <h2 class="font-display text-lg font-semibold text-ink">Andamiaje listo</h2>
+    <p class="mt-2 text-sm text-ink-variant">
+      El proyecto VATISHE está montado con el tema visual <strong>VATISHE Core</strong>.
+      Los paneles por rol (Administrador e Inquilino) se habilitan en las siguientes fases.
+    </p>
+    <div class="mt-4 flex flex-wrap gap-2">
+      <span class="chip-success">Pagado</span>
+      <span class="chip-warning">Pendiente</span>
+      <span class="chip-danger">Vencido</span>
+    </div>
+    <div class="mt-4 flex gap-2">
+      <a href="{% url 'core:inicio' %}" class="btn-primary">Botón primario</a>
+      <a href="#" class="btn-secondary">Secundario</a>
+    </div>
+  </div>
+
+  {% if es_admin %}
+  <a href="{% url 'admin:index' %}" class="btn-secondary w-full">Ir al panel de administración de Django</a>
+  {% endif %}
+</section>
+{% endblock %}

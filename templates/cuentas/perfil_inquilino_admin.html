@@ -1,0 +1,82 @@
+{% extends "base_admin.html" %}
+{% block titulo %}Perfil de inquilino{% endblock %}
+
+{% block contenido %}
+<div class="space-y-4">
+  <div class="flex items-center gap-2">
+    <a href="{% url 'cuentas:gestion_usuarios' %}" class="text-ink-variant hover:text-primary flex items-center">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+    <h1 class="font-display text-2xl font-bold text-primary">Perfil de inquilino</h1>
+  </div>
+
+  {# Cabecera #}
+  <div class="card p-5 flex items-center gap-4">
+    <div class="w-16 h-16 rounded-full bg-primary flex items-center justify-center shrink-0">
+      <span class="material-symbols-outlined text-primary-fg" style="font-size:36px">person</span>
+    </div>
+    <div class="min-w-0">
+      <p class="font-display text-lg font-bold text-ink truncate">{{ inquilino.get_full_name|default:inquilino.username }}</p>
+      <p class="text-sm text-ink-variant truncate">{{ inquilino.email }}</p>
+      {% if inquilino.is_active %}
+        <span class="chip-success mt-1">Activo</span>
+      {% else %}
+        <span class="chip-neutral mt-1">Inactivo</span>
+      {% endif %}
+    </div>
+  </div>
+
+  {# Datos #}
+  <div class="card p-5 space-y-3">
+    <div>
+      <p class="form-label mb-0">Usuario</p>
+      <p class="text-ink">{{ inquilino.username }}</p>
+    </div>
+    <div>
+      <p class="form-label mb-0">Teléfono</p>
+      <p class="text-ink">{{ inquilino.telefono|default:"—" }}</p>
+    </div>
+    {% with perfil=inquilino.perfil_inquilino %}
+    <div>
+      <p class="form-label mb-0">Cédula</p>
+      <p class="text-ink">{{ perfil.cedula|default:"—" }}</p>
+    </div>
+    <div>
+      <p class="form-label mb-0">Teléfono alterno</p>
+      <p class="text-ink">{{ perfil.telefono_alterno|default:"—" }}</p>
+    </div>
+    <div>
+      <p class="form-label mb-0">Contacto de emergencia</p>
+      <p class="text-ink">{{ perfil.contacto_emergencia|default:"—" }}</p>
+    </div>
+    {% if perfil.notas %}
+    <div>
+      <p class="form-label mb-0">Notas</p>
+      <p class="text-ink whitespace-pre-line">{{ perfil.notas }}</p>
+    </div>
+    {% endif %}
+    {% endwith %}
+  </div>
+
+  {# Acciones #}
+  <div class="space-y-2">
+    <a href="{% url 'cuentas:editar_inquilino' inquilino.pk %}" class="btn-primary w-full">
+      <span class="material-symbols-outlined" style="font-size:20px">edit</span> Editar datos
+    </a>
+    <form method="post" action="{% url 'cuentas:cambiar_estado_inquilino' inquilino.pk %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.path }}">
+      {% if inquilino.is_active %}
+        <button type="submit" class="btn-secondary w-full text-danger border-danger hover:bg-danger/5"
+                onclick="return confirm('¿Desactivar a este inquilino? Se conservarán sus datos históricos.');">
+          <span class="material-symbols-outlined" style="font-size:20px">block</span> Desactivar inquilino
+        </button>
+      {% else %}
+        <button type="submit" class="btn-secondary w-full">
+          <span class="material-symbols-outlined" style="font-size:20px">check_circle</span> Reactivar inquilino
+        </button>
+      {% endif %}
+    </form>
+  </div>
+</div>
+{% endblock %}

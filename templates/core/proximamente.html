@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block titulo %}Próximamente{% endblock %}
+
+{% block contenido %}
+<div class="min-h-[60vh] flex flex-col items-center justify-center text-center px-6">
+  <div class="w-16 h-16 rounded-full bg-surface-high flex items-center justify-center mb-4">
+    <span class="material-symbols-outlined text-primary" style="font-size:32px">construction</span>
+  </div>
+  <h1 class="font-display text-xl font-bold text-primary">{{ seccion }}</h1>
+  <p class="mt-2 text-sm text-ink-variant max-w-xs">
+    Esta sección estará disponible en una próxima fase del desarrollo.
+  </p>
+  <a href="{% url 'core:inicio' %}" class="btn-primary mt-6">Volver al inicio</a>
+</div>
+{% endblock %}
