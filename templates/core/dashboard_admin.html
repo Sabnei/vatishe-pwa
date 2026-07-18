@@ -17,7 +17,7 @@
     <div class="card p-4">
       <p class="form-label mb-1">Apartamentos</p>
       <div class="flex items-end justify-between">
-        <span class="font-display text-4xl font-bold text-outline-variant">—</span>
+        <span class="font-display text-4xl font-bold text-primary">{{ total_apartamentos }}</span>
         <span class="material-symbols-outlined text-outline">apartment</span>
       </div>
     </div>
@@ -37,6 +37,27 @@
     </div>
   </section>
 
+  {# Alerta de contratos por vencer (RF-003). #}
+  {% if num_por_vencer %}
+  <section class="space-y-2">
+    <div class="flex items-center justify-between">
+      <h2 class="font-display text-lg font-semibold text-primary">Contratos por vencer</h2>
+      <a href="{% url 'contratos:lista' %}?estado=por_vencer" class="text-xs font-bold uppercase text-accent">Ver todos</a>
+    </div>
+    <div class="card divide-y divide-outline-variant/60">
+      {% for c in contratos_por_vencer %}
+      <a href="{% url 'contratos:detalle' c.pk %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
+        <div>
+          <p class="font-semibold text-ink">{{ c.apartamento.codigo }}</p>
+          <p class="text-sm text-ink-variant">{{ c.inquilino.get_full_name|default:c.inquilino.username }}</p>
+        </div>
+        <span class="chip-warning">Vence en {{ c.dias_para_vencer }} d</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
   {# Accesos rápidos a los módulos disponibles. #}
   <section class="space-y-3">
     <h2 class="font-display text-lg font-semibold text-primary">Gestión</h2>
@@ -48,12 +69,19 @@
         </span>
         <span class="material-symbols-outlined text-outline">chevron_right</span>
       </a>
-      <a href="{% url 'core:proximamente' %}?s=Apartamentos" class="flex items-center justify-between p-4 hover:bg-surface-low">
+      <a href="{% url 'apartamentos:lista' %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
         <span class="flex items-center gap-3">
           <span class="material-symbols-outlined text-primary">apartment</span>
           <span class="font-semibold text-ink">Apartamentos</span>
         </span>
-        <span class="chip-neutral">Próximamente</span>
+        <span class="material-symbols-outlined text-outline">chevron_right</span>
+      </a>
+      <a href="{% url 'contratos:lista' %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
+        <span class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary">description</span>
+          <span class="font-semibold text-ink">Contratos</span>
+        </span>
+        <span class="material-symbols-outlined text-outline">chevron_right</span>
       </a>
       <a href="{% url 'core:proximamente' %}?s=Reportes" class="flex items-center justify-between p-4 hover:bg-surface-low">
         <span class="flex items-center gap-3">

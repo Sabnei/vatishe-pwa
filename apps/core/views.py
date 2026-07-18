@@ -15,14 +15,23 @@ def inicio(request):
 
 def _dashboard_admin(request):
     """Panel del Administrador. Las métricas se enriquecen en fases posteriores."""
+    from apps.apartamentos.models import Apartamento
+    from apps.contratos.models import Contrato
     from apps.cuentas.models import Usuario
 
+    contratos_por_vencer = Contrato.objects.por_vencer(dias=30).select_related(
+        "apartamento", "inquilino"
+    )
     contexto = {
         "nav_activo": "inicio",
         "total_inquilinos": Usuario.objects.filter(
             rol=Usuario.Rol.INQUILINO, is_active=True
         ).count(),
-        # Métricas de apartamentos/cobros/comprobantes: se conectan en Fases 3-4.
+        "total_apartamentos": Apartamento.objects.filter(activo=True).count(),
+        "total_contratos_activos": Contrato.objects.filter(activo=True).count(),
+        "contratos_por_vencer": contratos_por_vencer[:5],
+        "num_por_vencer": contratos_por_vencer.count(),
+        # Métricas de cobros/comprobantes: se conectan en la Fase 4.
     }
     return render(request, "core/dashboard_admin.html", contexto)
 

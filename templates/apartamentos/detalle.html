@@ -1,0 +1,107 @@
+{% extends "base_admin.html" %}
+{% load vatishe_extras %}
+{% block titulo %}{{ apartamento.codigo }}{% endblock %}
+
+{% block contenido %}
+<div class="space-y-4">
+  <div class="flex items-center gap-2">
+    <a href="{% url 'apartamentos:lista' %}" class="text-ink-variant hover:text-primary flex items-center">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+    <h1 class="font-display text-2xl font-bold text-primary">{{ apartamento.codigo }}</h1>
+    {% if not apartamento.activo %}<span class="chip-neutral">Inactivo</span>{% endif %}
+  </div>
+
+  {# Datos del apartamento #}
+  <div class="card p-5 space-y-3">
+    <div class="flex justify-between">
+      <span class="form-label mb-0">Monto mensual</span>
+      <span class="font-semibold text-ink">{{ apartamento.monto_mensual|colones }}</span>
+    </div>
+    <div class="flex justify-between">
+      <span class="form-label mb-0">Día de vencimiento</span>
+      <span class="text-ink">Día {{ apartamento.dia_vencimiento }}</span>
+    </div>
+    {% if apartamento.descripcion %}
+    <div>
+      <span class="form-label mb-0">Descripción</span>
+      <p class="text-ink whitespace-pre-line">{{ apartamento.descripcion }}</p>
+    </div>
+    {% endif %}
+  </div>
+
+  {# Contrato activo #}
+  <div class="card overflow-hidden">
+    <div class="px-4 py-3 bg-primary-fixed flex justify-between items-center">
+      <span class="text-xs font-bold uppercase tracking-wide text-primary">Contrato actual</span>
+      {% if contrato_activo %}<span class="chip-success">Activo</span>{% endif %}
+    </div>
+    <div class="p-5">
+      {% if contrato_activo %}
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="font-semibold text-ink">{{ contrato_activo.inquilino.get_full_name|default:contrato_activo.inquilino.username }}</p>
+            <p class="text-sm text-ink-variant flex items-center gap-1">
+              <span class="material-symbols-outlined" style="font-size:16px">calendar_today</span>
+              {{ contrato_activo.fecha_inicio|date:"d M Y" }} — {{ contrato_activo.fecha_vencimiento|date:"d M Y" }}
+            </p>
+          </div>
+          <div class="text-right">
+            <p class="form-label mb-0">Mensualidad</p>
+            <p class="font-display font-bold text-accent">{{ contrato_activo.monto|colones }}</p>
+          </div>
+        </div>
+        <a href="{% url 'contratos:detalle' contrato_activo.pk %}" class="btn-secondary w-full mt-4">Ver contrato</a>
+      {% else %}
+        <p class="text-sm text-ink-variant mb-4">Este apartamento no tiene un contrato activo.</p>
+        {% if apartamento.activo %}
+        <a href="{% url 'contratos:nuevo' %}?apartamento={{ apartamento.pk }}" class="btn-primary w-full">
+          <span class="material-symbols-outlined" style="font-size:20px">assignment_add</span> Asignar inquilino (nuevo contrato)
+        </a>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+
+  {# Historial de contratos #}
+  {% if historial %}
+  <div class="card p-5">
+    <h2 class="font-display text-lg font-semibold text-primary mb-3">Historial de contratos</h2>
+    <div class="divide-y divide-outline-variant/60">
+      {% for c in historial %}
+        <a href="{% url 'contratos:detalle' c.pk %}" class="flex items-center justify-between py-3">
+          <div>
+            <p class="text-sm font-medium text-ink">{{ c.inquilino.get_full_name|default:c.inquilino.username }}</p>
+            <p class="text-xs text-ink-variant">{{ c.fecha_inicio|date:"d M Y" }} — {{ c.fecha_vencimiento|date:"d M Y" }}</p>
+          </div>
+          <div class="text-right">
+            <p class="text-sm font-semibold text-ink">{{ c.monto|colones }}</p>
+            {% if c.activo %}<span class="chip-success">Activo</span>{% else %}<span class="chip-neutral">Finalizado</span>{% endif %}
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {# Acciones #}
+  <div class="space-y-2">
+    <a href="{% url 'apartamentos:editar' apartamento.pk %}" class="btn-primary w-full">
+      <span class="material-symbols-outlined" style="font-size:20px">edit</span> Editar apartamento
+    </a>
+    <form method="post" action="{% url 'apartamentos:cambiar_estado' apartamento.pk %}">
+      {% csrf_token %}
+      {% if apartamento.activo %}
+        <button type="submit" class="btn-secondary w-full text-danger border-danger hover:bg-danger/5"
+                onclick="return confirm('¿Desactivar este apartamento?');">
+          <span class="material-symbols-outlined" style="font-size:20px">block</span> Desactivar
+        </button>
+      {% else %}
+        <button type="submit" class="btn-secondary w-full">
+          <span class="material-symbols-outlined" style="font-size:20px">check_circle</span> Reactivar
+        </button>
+      {% endif %}
+    </form>
+  </div>
+</div>
+{% endblock %}

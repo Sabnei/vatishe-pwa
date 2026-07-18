@@ -1,0 +1,84 @@
+{% extends "base_admin.html" %}
+{% load vatishe_extras %}
+{% block titulo %}Apartamentos{% endblock %}
+
+{% block contenido %}
+<div class="space-y-4">
+
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="font-display text-2xl font-bold text-primary">Apartamentos</h1>
+      <p class="text-sm text-ink-variant">{{ ocupados }} de {{ total_activos }} ocupado{{ ocupados|pluralize }}</p>
+    </div>
+    <a href="{% url 'apartamentos:nuevo' %}" class="btn-primary">
+      <span class="material-symbols-outlined" style="font-size:20px">add</span> Nuevo
+    </a>
+  </div>
+
+  {# Resumen de ocupación #}
+  <div class="card p-4 flex items-center justify-between bg-primary text-primary-fg">
+    <div>
+      <p class="text-xs font-bold uppercase tracking-wide opacity-80">Ocupación</p>
+      <p class="font-display text-3xl font-bold">{{ ocupacion|porcentaje }}</p>
+    </div>
+    <span class="material-symbols-outlined" style="font-size:40px">trending_up</span>
+  </div>
+
+  {# Búsqueda y filtro #}
+  <form method="get" class="space-y-2">
+    <div class="relative">
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" style="font-size:20px">search</span>
+      <input type="text" name="q" value="{{ q }}" placeholder="Buscar apartamento o inquilino" class="form-input pl-10">
+    </div>
+    <div class="flex gap-2">
+      <select name="estado" class="form-input bg-surface-lowest" onchange="this.form.submit()">
+        <option value="" {% if estado == "" %}selected{% endif %}>Todos</option>
+        <option value="activos" {% if estado == "activos" %}selected{% endif %}>Activos</option>
+        <option value="inactivos" {% if estado == "inactivos" %}selected{% endif %}>Inactivos</option>
+      </select>
+      <button type="submit" class="btn-secondary">Filtrar</button>
+    </div>
+  </form>
+
+  {# Listado #}
+  <div class="space-y-3">
+    {% for apto in apartamentos %}
+      {% with inq=apto.inquilino_activo %}
+      <a href="{% url 'apartamentos:detalle' apto.pk %}"
+         class="card p-4 flex items-center justify-between hover:border-accent transition-colors">
+        <div class="flex items-center gap-4 min-w-0">
+          <div class="w-12 h-12 rounded-md flex items-center justify-center shrink-0 {% if inq %}bg-primary text-primary-fg{% else %}bg-surface-container text-outline{% endif %}">
+            <span class="material-symbols-outlined">apartment</span>
+          </div>
+          <div class="min-w-0">
+            <h3 class="font-semibold text-ink truncate">{{ apto.codigo }}</h3>
+            {% if inq %}
+              <p class="text-sm text-ink-variant truncate">{{ inq.get_full_name|default:inq.username }}</p>
+            {% else %}
+              <p class="text-sm text-outline italic">Sin inquilino</p>
+            {% endif %}
+          </div>
+        </div>
+        <div class="flex flex-col items-end gap-1 shrink-0">
+          <span class="font-semibold text-ink">{{ apto.monto_mensual|colones }}</span>
+          {% if not apto.activo %}
+            <span class="chip-neutral">Inactivo</span>
+          {% elif inq %}
+            <span class="chip-success">Ocupado</span>
+          {% else %}
+            <span class="chip-warning">Desocupado</span>
+          {% endif %}
+        </div>
+      </a>
+      {% endwith %}
+    {% empty %}
+      <div class="card p-8 text-center text-ink-variant">
+        <span class="material-symbols-outlined mb-2" style="font-size:36px">apartment</span>
+        <p class="text-sm">No hay apartamentos registrados todavía.</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% include "partials/paginacion.html" %}
+</div>
+{% endblock %}

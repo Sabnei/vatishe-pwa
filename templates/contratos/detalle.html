@@ -1,0 +1,87 @@
+{% extends "base_admin.html" %}
+{% load vatishe_extras %}
+{% block titulo %}Contrato {{ contrato.apartamento.codigo }}{% endblock %}
+
+{% block contenido %}
+<div class="space-y-4">
+  <div class="flex items-center gap-2">
+    <a href="{% url 'contratos:lista' %}" class="text-ink-variant hover:text-primary flex items-center">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+    <h1 class="font-display text-2xl font-bold text-primary">Contrato</h1>
+  </div>
+
+  <div class="card overflow-hidden">
+    <div class="px-4 py-3 bg-primary-fixed flex justify-between items-center">
+      <span class="text-xs font-bold uppercase tracking-wide text-primary">{{ contrato.apartamento.codigo }}</span>
+      {% if not contrato.activo %}
+        <span class="chip-neutral">Finalizado</span>
+      {% elif contrato.vencido %}
+        <span class="chip-danger">Vencido</span>
+      {% else %}
+        <span class="chip-success">Activo</span>
+      {% endif %}
+    </div>
+    <div class="p-5 space-y-4">
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="form-label mb-0">Inquilino</p>
+          <p class="font-semibold text-ink">{{ contrato.inquilino.get_full_name|default:contrato.inquilino.username }}</p>
+          <p class="text-sm text-ink-variant">{{ contrato.inquilino.email }}</p>
+        </div>
+        <div class="text-right">
+          <p class="form-label mb-0">Mensualidad</p>
+          <p class="font-display font-bold text-accent">{{ contrato.monto|colones }}</p>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-outline-variant space-y-1">
+        <p class="text-sm text-ink flex items-center gap-1">
+          <span class="material-symbols-outlined" style="font-size:16px">calendar_today</span>
+          {{ contrato.fecha_inicio|date:"d M Y" }} — {{ contrato.fecha_vencimiento|date:"d M Y" }}
+        </p>
+        {% if contrato.activo %}
+          <div class="flex justify-between items-end pt-1">
+            <p class="text-sm font-semibold {% if contrato.vencido %}text-danger{% else %}text-ink{% endif %}">
+              {% if contrato.vencido %}Venció hace {{ contrato.dias_para_vencer|stringformat:"d"|cut:"-" }} días
+              {% else %}Vence en {{ contrato.dias_para_vencer }} días{% endif %}
+            </p>
+            <p class="text-xs text-ink-variant">{{ contrato.porcentaje_periodo|porcentaje }} completado</p>
+          </div>
+          <div class="w-full bg-surface-high rounded-full h-2 overflow-hidden">
+            <div class="bg-accent h-full rounded-full" style="width: {{ contrato.porcentaje_periodo }}%;"></div>
+          </div>
+        {% endif %}
+      </div>
+
+      {% if contrato.renovacion_de %}
+      <p class="text-xs text-ink-variant">
+        Renovación de un
+        <a href="{% url 'contratos:detalle' contrato.renovacion_de.pk %}" class="text-accent font-semibold">contrato anterior</a>.
+      </p>
+      {% endif %}
+      {% if contrato.notas %}
+      <div>
+        <p class="form-label mb-0">Notas</p>
+        <p class="text-ink whitespace-pre-line">{{ contrato.notas }}</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if contrato.activo %}
+  <div class="space-y-2">
+    <a href="{% url 'contratos:renovar' contrato.pk %}" class="btn-primary w-full">
+      <span class="material-symbols-outlined" style="font-size:20px">autorenew</span> Renovar contrato
+    </a>
+    <form method="post" action="{% url 'contratos:finalizar' contrato.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="btn-secondary w-full text-danger border-danger hover:bg-danger/5"
+              onclick="return confirm('¿Finalizar este contrato? El apartamento quedará disponible.');">
+        <span class="material-symbols-outlined" style="font-size:20px">event_busy</span> Finalizar contrato
+      </button>
+    </form>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

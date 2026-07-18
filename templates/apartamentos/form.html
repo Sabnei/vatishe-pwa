@@ -1,0 +1,23 @@
+{% extends "base_admin.html" %}
+{% block titulo %}{{ titulo }}{% endblock %}
+
+{% block contenido %}
+<div class="space-y-4">
+  <div class="flex items-center gap-2">
+    <a href="{% url 'apartamentos:lista' %}" class="text-ink-variant hover:text-primary flex items-center">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+    <h1 class="font-display text-2xl font-bold text-primary">{{ titulo }}</h1>
+  </div>
+
+  <form method="post" class="card p-5">
+    {% csrf_token %}
+    {% include "partials/campos_form.html" with form=form %}
+    <button type="submit" class="btn-primary w-full h-12 mt-2">Guardar</button>
+  </form>
+
+  <p class="text-xs text-ink-variant px-1">
+    El inquilino se asigna creando un contrato desde la ficha del apartamento.
+  </p>
+</div>
+{% endblock %}
