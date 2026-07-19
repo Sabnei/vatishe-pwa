@@ -9,12 +9,12 @@
     <span class="material-symbols-outlined" {% if a == 'inicio' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>home</span>
     <span class="text-[10px] font-bold uppercase tracking-wide">Inicio</span>
   </a>
-  <a href="{% url 'core:proximamente' %}?s=Abonos"
+  <a href="{% url 'pagos:mis_cobros' %}"
      class="flex flex-col items-center gap-1 min-w-[64px] py-1 {% if a == 'abonos' %}text-accent{% else %}text-ink-variant hover:text-primary{% endif %}">
     <span class="material-symbols-outlined" {% if a == 'abonos' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>account_balance_wallet</span>
     <span class="text-[10px] font-bold uppercase tracking-wide">Abonos</span>
   </a>
-  <a href="{% url 'core:proximamente' %}?s=Historial"
+  <a href="{% url 'pagos:historial' %}"
      class="flex flex-col items-center gap-1 min-w-[64px] py-1 {% if a == 'historial' %}text-accent{% else %}text-ink-variant hover:text-primary{% endif %}">
     <span class="material-symbols-outlined" {% if a == 'historial' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>history</span>
     <span class="text-[10px] font-bold uppercase tracking-wide">Historial</span>

@@ -1,0 +1,29 @@
+{% extends "base_admin.html" %}
+{% load vatishe_extras %}
+{% block titulo %}Verificar comprobantes{% endblock %}
+
+{% block contenido %}
+<div class="space-y-4">
+  <h1 class="font-display text-2xl font-bold text-primary">Comprobantes por verificar</h1>
+
+  <div class="space-y-3">
+    {% for a in abonos %}
+      <div class="card p-4 flex items-center justify-between">
+        <div class="min-w-0">
+          <p class="font-semibold text-ink truncate">{{ a.cobro.inquilino.get_full_name|default:a.cobro.inquilino.username }}</p>
+          <p class="text-sm text-ink-variant truncate">{{ a.cobro.apartamento.codigo }} · {{ a.monto|colones }}</p>
+          <p class="text-xs text-ink-variant">{{ a.get_metodo_display }} · {{ a.fecha|date:"d M Y" }}</p>
+        </div>
+        <a href="{% url 'pagos:verificar_detalle' a.pk %}" class="btn-primary shrink-0">Verificar</a>
+      </div>
+    {% empty %}
+      <div class="card p-8 text-center text-ink-variant">
+        <span class="material-symbols-outlined mb-2" style="font-size:36px">task_alt</span>
+        <p class="text-sm">No hay comprobantes pendientes. ¡Todo al día!</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% include "partials/paginacion.html" %}
+</div>
+{% endblock %}

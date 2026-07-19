@@ -1,0 +1,63 @@
+{% extends base_template|default:"base.html" %}
+{% load vatishe_extras %}
+{% block titulo %}Detalle de abono{% endblock %}
+{% block barra_titulo %}Detalle de abono{% endblock %}
+{% block main_pb %}pb-4{% endblock %}
+
+{% block contenido %}
+<div class="space-y-4">
+  <div class="flex items-center gap-2">
+    <a href="{% if user.es_admin %}{% url 'cobros:detalle' abono.cobro.pk %}{% else %}{% url 'pagos:historial' %}{% endif %}"
+       class="text-ink-variant hover:text-primary flex items-center">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+    <h1 class="font-display text-2xl font-bold text-primary">Detalle de abono</h1>
+  </div>
+
+  {# Estado #}
+  <div class="card p-4 flex items-center justify-between">
+    <div>
+      <p class="form-label mb-0">Estado</p>
+      {% if abono.aprobado %}<span class="chip-success">Aprobado</span>
+      {% elif abono.rechazado %}<span class="chip-danger">Rechazado</span>
+      {% else %}<span class="chip-warning">Pendiente de verificación</span>{% endif %}
+    </div>
+    <div class="text-right">
+      <p class="form-label mb-0">Monto</p>
+      <p class="font-display text-xl font-bold text-accent">{{ abono.monto|colones }}</p>
+    </div>
+  </div>
+
+  {% if abono.rechazado and abono.motivo_rechazo %}
+  <div class="card p-4 bg-danger-container">
+    <p class="text-xs font-bold uppercase tracking-wide text-danger-fg mb-1">Motivo del rechazo</p>
+    <p class="text-sm text-danger-fg">{{ abono.motivo_rechazo }}</p>
+  </div>
+  {% endif %}
+
+  {# Datos #}
+  <div class="card p-5 space-y-3">
+    <div class="flex justify-between"><span class="form-label mb-0">Cobro</span><span class="text-ink">{{ abono.cobro.periodo_display }}</span></div>
+    <div class="flex justify-between"><span class="form-label mb-0">Apartamento</span><span class="text-ink">{{ abono.cobro.apartamento.codigo }}</span></div>
+    <div class="flex justify-between"><span class="form-label mb-0">Método</span><span class="text-ink">{{ abono.get_metodo_display }}</span></div>
+    <div class="flex justify-between"><span class="form-label mb-0">Fecha del pago</span><span class="text-ink">{{ abono.fecha|date:"d M Y" }}</span></div>
+    {% if abono.referencia %}<div class="flex justify-between"><span class="form-label mb-0">Referencia</span><span class="text-ink font-mono text-sm">{{ abono.referencia }}</span></div>{% endif %}
+    {% if abono.observaciones %}<div><span class="form-label mb-0">Observaciones</span><p class="text-ink text-sm whitespace-pre-line">{{ abono.observaciones }}</p></div>{% endif %}
+  </div>
+
+  {# Comprobante #}
+  <div class="card p-4">
+    <p class="form-label">Comprobante</p>
+    {% if abono.es_pdf %}
+      <a href="{% url 'pagos:comprobante' abono.pk %}" target="_blank" class="btn-secondary w-full">
+        <span class="material-symbols-outlined" style="font-size:20px">picture_as_pdf</span> Ver comprobante (PDF)
+      </a>
+    {% else %}
+      <a href="{% url 'pagos:comprobante' abono.pk %}" target="_blank" class="block">
+        <img src="{% url 'pagos:comprobante' abono.pk %}" alt="Comprobante"
+             class="w-full rounded-lg border border-outline-variant">
+      </a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

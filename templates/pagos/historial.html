@@ -1,0 +1,37 @@
+{% extends "base_inquilino.html" %}
+{% load vatishe_extras %}
+{% block titulo %}Historial de pagos{% endblock %}
+{% block barra_titulo %}Historial{% endblock %}
+{% block main_pb %}pb-4{% endblock %}
+
+{% block contenido %}
+<div class="space-y-3">
+  <h1 class="font-display text-2xl font-bold text-primary">Historial de pagos</h1>
+
+  <div class="card divide-y divide-outline-variant/60">
+    {% for a in abonos %}
+      <a href="{% url 'pagos:detalle_abono' a.pk %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-ink-variant shrink-0">
+            <span class="material-symbols-outlined">receipt_long</span>
+          </div>
+          <div class="min-w-0">
+            <p class="font-semibold text-ink truncate">{{ a.monto|colones }}</p>
+            <p class="text-xs text-ink-variant truncate">{{ a.cobro.periodo_display }} · {{ a.fecha|date:"d M Y" }}</p>
+          </div>
+        </div>
+        {% if a.aprobado %}<span class="chip-success">Aprobado</span>
+        {% elif a.rechazado %}<span class="chip-danger">Rechazado</span>
+        {% else %}<span class="chip-warning">Pendiente</span>{% endif %}
+      </a>
+    {% empty %}
+      <div class="p-8 text-center text-ink-variant">
+        <span class="material-symbols-outlined mb-2" style="font-size:36px">history</span>
+        <p class="text-sm">Aún no ha registrado abonos.</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% include "partials/paginacion.html" %}
+</div>
+{% endblock %}

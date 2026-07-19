@@ -1,4 +1,5 @@
 {% extends "base_inquilino.html" %}
+{% load vatishe_extras %}
 {% block titulo %}Inicio{% endblock %}
 {% block main_pb %}pb-4{% endblock %}
 
@@ -10,49 +11,83 @@
     <h2 class="font-display text-2xl font-bold text-primary">{{ user.get_full_name|default:user.username }}</h2>
   </section>
 
-  {# Tarjeta de saldo. Los datos reales se conectan en la Fase 4 (cobros). #}
+  {# Saldo pendiente #}
   <div class="card p-6">
     <div class="flex justify-between items-start mb-4">
       <p class="form-label mb-0">Mi saldo pendiente</p>
-      <span class="chip-neutral">Sin datos aún</span>
+      {% if al_dia %}<span class="chip-success">Al día</span>{% else %}<span class="chip-warning">Pendiente</span>{% endif %}
     </div>
-    <p class="font-display text-4xl font-bold text-primary mb-2">₡ —</p>
+    <p class="font-display text-4xl font-bold text-primary mb-2">{{ saldo_total|colones }}</p>
     <div class="flex items-center gap-2 text-ink-variant">
-      <span class="material-symbols-outlined" style="font-size:18px">info</span>
-      <p class="text-sm">El detalle de cobros estará disponible próximamente.</p>
+      <span class="material-symbols-outlined" style="font-size:18px">{% if al_dia %}verified_user{% else %}schedule{% endif %}</span>
+      <p class="text-sm">{% if al_dia %}Sin cobros pendientes{% else %}Tiene cobros por pagar{% endif %}</p>
     </div>
   </div>
+
+  {# Cobro del mes #}
+  {% if cobro_mes %}
+  <div class="card overflow-hidden">
+    <div class="p-6 bg-surface-low border-b border-outline-variant">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="material-symbols-outlined text-accent">calendar_today</span>
+        <h3 class="font-semibold text-primary">Cobro del mes</h3>
+        {% include "cobros/_chip_estado.html" with estado=cobro_mes.estado %}
+      </div>
+      <p class="font-display text-3xl font-bold text-primary">{{ cobro_mes.saldo_pendiente|colones }}</p>
+      <p class="text-sm text-ink-variant">Vence el {{ cobro_mes.fecha_vencimiento|date:"d \d\e F, Y" }}</p>
+    </div>
+    {% if cobro_mes.saldo_pendiente > 0 %}
+    <div class="p-6">
+      <a href="{% url 'pagos:registrar_abono' cobro_mes.pk %}" class="btn-primary w-full h-12">
+        <span class="material-symbols-outlined" style="font-size:20px">payments</span> Realizar abono
+      </a>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {# Últimos movimientos #}
+  <section class="space-y-3">
+    <div class="flex justify-between items-center">
+      <h3 class="font-display text-lg font-semibold text-primary">Últimos movimientos</h3>
+      <a href="{% url 'pagos:historial' %}" class="text-xs font-bold uppercase text-accent">Ver todo</a>
+    </div>
+    <div class="card divide-y divide-outline-variant/60">
+      {% for a in abonos_recientes %}
+        <a href="{% url 'pagos:detalle_abono' a.pk %}" class="flex items-center justify-between p-4">
+          <div class="flex items-center gap-3">
+            <div class="bg-surface-container rounded-lg p-2">
+              <span class="material-symbols-outlined text-ink-variant">receipt_long</span>
+            </div>
+            <div>
+              <p class="font-semibold text-ink">{{ a.monto|colones }}</p>
+              <p class="text-xs text-ink-variant">{{ a.fecha|date:"d M Y" }}</p>
+            </div>
+          </div>
+          {% if a.aprobado %}<span class="chip-success">Aprobado</span>
+          {% elif a.rechazado %}<span class="chip-danger">Rechazado</span>
+          {% else %}<span class="chip-warning">Pendiente</span>{% endif %}
+        </a>
+      {% empty %}
+        <p class="p-4 text-sm text-ink-variant">Aún no hay movimientos.</p>
+      {% endfor %}
+    </div>
+  </section>
 
   <section class="space-y-3">
     <h3 class="font-display text-lg font-semibold text-primary">Accesos</h3>
     <div class="card divide-y divide-outline-variant/60">
       <a href="{% url 'contratos:mi_contrato' %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
-        <span class="flex items-center gap-3">
-          <span class="material-symbols-outlined text-primary">description</span>
-          <span class="font-semibold text-ink">Mi contrato</span>
-        </span>
+        <span class="flex items-center gap-3"><span class="material-symbols-outlined text-primary">description</span><span class="font-semibold text-ink">Mi contrato</span></span>
         <span class="material-symbols-outlined text-outline">chevron_right</span>
-      </a>
-      <a href="{% url 'cuentas:mi_perfil' %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
-        <span class="flex items-center gap-3">
-          <span class="material-symbols-outlined text-primary">person</span>
-          <span class="font-semibold text-ink">Mi perfil</span>
-        </span>
-        <span class="material-symbols-outlined text-outline">chevron_right</span>
-      </a>
-      <a href="{% url 'core:proximamente' %}?s=Abonos" class="flex items-center justify-between p-4 hover:bg-surface-low">
-        <span class="flex items-center gap-3">
-          <span class="material-symbols-outlined text-primary">account_balance_wallet</span>
-          <span class="font-semibold text-ink">Registrar abono</span>
-        </span>
-        <span class="chip-neutral">Próximamente</span>
       </a>
       <a href="{% url 'core:proximamente' %}?s=Reportar avería" class="flex items-center justify-between p-4 hover:bg-surface-low">
-        <span class="flex items-center gap-3">
-          <span class="material-symbols-outlined text-primary">build</span>
-          <span class="font-semibold text-ink">Reportar avería</span>
-        </span>
+        <span class="flex items-center gap-3"><span class="material-symbols-outlined text-primary">build</span><span class="font-semibold text-ink">Reportar avería</span></span>
         <span class="chip-neutral">Próximamente</span>
+      </a>
+      <a href="{% url 'cuentas:mi_perfil' %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
+        <span class="flex items-center gap-3"><span class="material-symbols-outlined text-primary">person</span><span class="font-semibold text-ink">Mi perfil</span></span>
+        <span class="material-symbols-outlined text-outline">chevron_right</span>
       </a>
     </div>
   </section>

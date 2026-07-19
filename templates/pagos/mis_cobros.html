@@ -1,0 +1,46 @@
+{% extends "base_inquilino.html" %}
+{% load vatishe_extras %}
+{% block titulo %}Mis cobros{% endblock %}
+{% block barra_titulo %}Mis cobros{% endblock %}
+{% block main_pb %}pb-4{% endblock %}
+
+{% block contenido %}
+<div class="space-y-3">
+  <h1 class="font-display text-2xl font-bold text-primary">Mis cobros</h1>
+
+  {% for cobro in cobros %}
+    <div class="card p-4">
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="font-semibold text-ink">{{ cobro.periodo_display }}</h3>
+          <p class="text-sm text-ink-variant">{{ cobro.apartamento.codigo }} · vence {{ cobro.fecha_vencimiento|date:"d M Y" }}</p>
+        </div>
+        {% include "cobros/_chip_estado.html" with estado=cobro.estado %}
+      </div>
+      <div class="flex justify-between items-end mt-3 pt-3 border-t border-outline-variant">
+        <div>
+          <p class="form-label mb-0">Saldo</p>
+          <p class="font-display text-xl font-bold {% if cobro.saldo_pendiente <= 0 %}text-success{% else %}text-primary{% endif %}">{{ cobro.saldo_pendiente|colones }}</p>
+        </div>
+        {% if cobro.saldo_por_cubrir > 0 %}
+          <a href="{% url 'pagos:registrar_abono' cobro.pk %}" class="btn-primary">
+            <span class="material-symbols-outlined" style="font-size:20px">payments</span> Abonar
+          </a>
+        {% elif cobro.saldo_pendiente > 0 %}
+          <span class="chip-warning">En verificación</span>
+        {% else %}
+          <span class="chip-success">Al día</span>
+        {% endif %}
+      </div>
+    </div>
+  {% empty %}
+    <div class="card p-8 text-center text-ink-variant">
+      <span class="material-symbols-outlined mb-2" style="font-size:36px">receipt_long</span>
+      <p class="text-sm">Aún no tiene cobros. Los cobros del mes los genera el administrador;
+      cuando aparezca uno pendiente aquí, podrá registrar su abono.</p>
+    </div>
+  {% endfor %}
+
+  {% include "partials/paginacion.html" %}
+</div>
+{% endblock %}

@@ -153,7 +153,8 @@ class MiContratoView(InquilinoRequeridoMixin, TemplateView):
             .select_related("apartamento")
             .order_by("-fecha_inicio")
         )
-        ctx["contrato_activo"] = contratos.filter(activo=True).first()
+        # Un inquilino puede tener varios contratos activos (uno por apartamento).
+        ctx["contratos_activos"] = contratos.filter(activo=True)
         ctx["historial"] = contratos.filter(activo=False)
         ctx["nav_activo"] = "contrato"
         return ctx

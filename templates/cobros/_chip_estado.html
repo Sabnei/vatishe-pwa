@@ -1,0 +1,5 @@
+{% comment %}Chip de estado de un cobro. Uso: with estado=cobro.estado{% endcomment %}
+{% if estado == "PAGADO" %}<span class="chip-success">Pagado</span>
+{% elif estado == "PARCIAL" %}<span class="chip-warning">Parcial</span>
+{% elif estado == "CON_MULTA" %}<span class="chip-danger">Con multa</span>
+{% else %}<span class="chip-neutral">Pendiente</span>{% endif %}

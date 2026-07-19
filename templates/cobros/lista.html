@@ -1,0 +1,57 @@
+{% extends "base_admin.html" %}
+{% load vatishe_extras %}
+{% block titulo %}Cobros{% endblock %}
+
+{% block contenido %}
+<div class="space-y-4">
+  <div class="flex items-center justify-between">
+    <h1 class="font-display text-2xl font-bold text-primary">Cobros</h1>
+    <a href="{% url 'cobros:generar' %}" class="btn-primary">
+      <span class="material-symbols-outlined" style="font-size:20px">event_repeat</span> Generar
+    </a>
+  </div>
+
+  <form method="get" class="space-y-2">
+    <div class="relative">
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" style="font-size:20px">search</span>
+      <input type="text" name="q" value="{{ q }}" placeholder="Buscar apartamento o inquilino" class="form-input pl-10">
+    </div>
+    <div class="flex gap-2">
+      <select name="estado" class="form-input bg-surface-lowest" onchange="this.form.submit()">
+        <option value="">Todos los estados</option>
+        {% for val, label in estados %}
+          <option value="{{ val }}" {% if estado == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <input type="number" name="mes" value="{{ mes }}" placeholder="Mes" min="1" max="12" class="form-input w-20">
+      <input type="number" name="anio" value="{{ anio }}" placeholder="Año" class="form-input w-24">
+      <button type="submit" class="btn-secondary">Filtrar</button>
+    </div>
+  </form>
+
+  <div class="space-y-3">
+    {% for cobro in cobros %}
+      <a href="{% url 'cobros:detalle' cobro.pk %}" class="card p-4 block hover:border-accent transition-colors">
+        <div class="flex justify-between items-start">
+          <div class="min-w-0">
+            <h3 class="font-semibold text-ink truncate">{{ cobro.apartamento.codigo }} · {{ cobro.periodo_display }}</h3>
+            <p class="text-sm text-ink-variant truncate">{{ cobro.inquilino.get_full_name|default:cobro.inquilino.username }}</p>
+            <p class="text-xs text-ink-variant mt-1">Vence {{ cobro.fecha_vencimiento|date:"d M Y" }}</p>
+          </div>
+          <div class="text-right shrink-0">
+            <p class="font-semibold text-ink">{{ cobro.saldo_pendiente|colones }}</p>
+            {% include "cobros/_chip_estado.html" with estado=cobro.estado %}
+          </div>
+        </div>
+      </a>
+    {% empty %}
+      <div class="card p-8 text-center text-ink-variant">
+        <span class="material-symbols-outlined mb-2" style="font-size:36px">receipt_long</span>
+        <p class="text-sm">No hay cobros. Use «Generar» para crear los del mes.</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% include "partials/paginacion.html" %}
+</div>
+{% endblock %}

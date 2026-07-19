@@ -1,4 +1,5 @@
 {% extends "base_admin.html" %}
+{% load vatishe_extras %}
 {% block titulo %}Panel de administración{% endblock %}
 {% block main_pb %}pb-4{% endblock %}
 
@@ -21,21 +22,43 @@
         <span class="material-symbols-outlined text-outline">apartment</span>
       </div>
     </div>
-    <div class="card p-4">
+    <a href="{% url 'cobros:lista' %}" class="card p-4">
       <p class="form-label mb-1">Cobros pendientes</p>
       <div class="flex items-end justify-between">
-        <span class="font-display text-4xl font-bold text-outline-variant">—</span>
+        <span class="font-display text-4xl font-bold {% if cobros_pendientes %}text-accent{% else %}text-primary{% endif %}">{{ cobros_pendientes }}</span>
         <span class="material-symbols-outlined text-outline">schedule</span>
       </div>
-    </div>
-    <div class="card p-4">
+    </a>
+    <a href="{% url 'pagos:verificar_lista' %}" class="card p-4 relative">
       <p class="form-label mb-1">Por verificar</p>
       <div class="flex items-end justify-between">
-        <span class="font-display text-4xl font-bold text-outline-variant">—</span>
+        <span class="font-display text-4xl font-bold {% if num_por_verificar %}text-danger{% else %}text-primary{% endif %}">{{ num_por_verificar }}</span>
         <span class="material-symbols-outlined text-outline">receipt_long</span>
       </div>
+      {% if num_por_verificar %}<span class="absolute top-2 right-2 chip-danger">Nuevos</span>{% endif %}
+    </a>
+  </section>
+
+  {# Comprobantes pendientes de verificación (RF-006). #}
+  {% if comprobantes_pendientes %}
+  <section class="space-y-2">
+    <div class="flex items-center justify-between">
+      <h2 class="font-display text-lg font-semibold text-primary">Comprobantes pendientes</h2>
+      <a href="{% url 'pagos:verificar_lista' %}" class="text-xs font-bold uppercase text-accent">Ver todos</a>
+    </div>
+    <div class="card divide-y divide-outline-variant/60">
+      {% for a in comprobantes_pendientes %}
+      <div class="flex items-center justify-between p-4">
+        <div class="min-w-0">
+          <p class="font-semibold text-ink truncate">{{ a.cobro.inquilino.get_full_name|default:a.cobro.inquilino.username }}</p>
+          <p class="text-sm text-ink-variant truncate">{{ a.cobro.apartamento.codigo }} · {{ a.monto|colones }}</p>
+        </div>
+        <a href="{% url 'pagos:verificar_detalle' a.pk %}" class="btn-primary shrink-0">Verificar</a>
+      </div>
+      {% endfor %}
     </div>
   </section>
+  {% endif %}
 
   {# Alerta de contratos por vencer (RF-003). #}
   {% if num_por_vencer %}
@@ -82,6 +105,20 @@
           <span class="font-semibold text-ink">Contratos</span>
         </span>
         <span class="material-symbols-outlined text-outline">chevron_right</span>
+      </a>
+      <a href="{% url 'cobros:lista' %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
+        <span class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary">receipt_long</span>
+          <span class="font-semibold text-ink">Cobros</span>
+        </span>
+        <span class="material-symbols-outlined text-outline">chevron_right</span>
+      </a>
+      <a href="{% url 'pagos:verificar_lista' %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
+        <span class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary">fact_check</span>
+          <span class="font-semibold text-ink">Verificar comprobantes</span>
+        </span>
+        {% if num_por_verificar %}<span class="chip-danger">{{ num_por_verificar }}</span>{% else %}<span class="material-symbols-outlined text-outline">chevron_right</span>{% endif %}
       </a>
       <a href="{% url 'core:proximamente' %}?s=Reportes" class="flex items-center justify-between p-4 hover:bg-surface-low">
         <span class="flex items-center gap-3">

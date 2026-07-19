@@ -6,7 +6,11 @@
 
 {% block contenido %}
 <div class="space-y-6">
-  {% if contrato_activo %}
+  {% if contratos_activos %}
+    {% if contratos_activos|length > 1 %}
+      <p class="text-sm text-ink-variant">Tiene {{ contratos_activos|length }} contratos activos.</p>
+    {% endif %}
+    {% for contrato_activo in contratos_activos %}
     <section class="card overflow-hidden">
       <div class="px-4 py-3 bg-primary-fixed flex justify-between items-center">
         <span class="text-xs font-bold uppercase tracking-wide text-primary">Contrato actual</span>
@@ -39,6 +43,7 @@
         </div>
       </div>
     </section>
+    {% endfor %}
   {% else %}
     <div class="card p-8 text-center text-ink-variant">
       <span class="material-symbols-outlined mb-2" style="font-size:36px">description</span>

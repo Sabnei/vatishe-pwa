@@ -1,0 +1,44 @@
+{% extends "base_inquilino.html" %}
+{% load vatishe_extras %}
+{% block titulo %}Registrar abono{% endblock %}
+{% block barra_titulo %}Registrar abono{% endblock %}
+{% block main_pb %}pb-4{% endblock %}
+
+{% block contenido %}
+<div class="space-y-5">
+
+  {# Resumen del cobro #}
+  <section class="card p-4">
+    <div class="flex justify-between items-start">
+      <div>
+        <p class="form-label mb-0">Cobro</p>
+        <p class="font-semibold text-ink">{{ cobro.periodo_display }}</p>
+        <p class="text-sm text-ink-variant">{{ cobro.apartamento.codigo }}</p>
+      </div>
+      {% include "cobros/_chip_estado.html" with estado=cobro.estado %}
+    </div>
+    <div class="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-outline-variant">
+      <div>
+        <p class="form-label mb-0">Saldo pendiente</p>
+        <p class="font-semibold text-primary">{{ cobro.saldo_pendiente|colones }}</p>
+      </div>
+      <div>
+        <p class="form-label mb-0">Máximo a abonar</p>
+        <p class="text-ink">{{ cobro.saldo_por_cubrir|colones }}</p>
+      </div>
+    </div>
+  </section>
+
+  <form method="post" enctype="multipart/form-data" class="card p-5 space-y-4">
+    {% csrf_token %}
+    {% include "partials/campos_form.html" with form=form %}
+    <p class="text-xs text-ink-variant -mt-2">Formatos: JPG, PNG o PDF. Las imágenes se comprimen automáticamente.</p>
+    <button type="submit" class="btn-primary w-full h-12">Registrar abono</button>
+  </form>
+
+  <p class="text-xs text-ink-variant text-center px-4">
+    El abono quedará <strong>pendiente de verificación</strong>. Su saldo se
+    actualizará cuando el administrador apruebe el comprobante.
+  </p>
+</div>
+{% endblock %}
