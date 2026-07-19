@@ -20,7 +20,7 @@ sistema solo se sube el comprobante para que el Administrador lo verifique.
 - **PWA:** `manifest.webmanifest` + service worker, instalable y responsive desde 360px.
 - **Base de datos:** PostgreSQL gestionado (**Supabase**, pooler Supavisor). SQLite en local.
 - **Archivos:** **Supabase Storage** (S3, bucket privado) vía `django-storages` + `boto3`.
-- **PDF:** WeasyPrint. **CSV** nativo. **Correo:** Gmail SMTP.
+- **PDF:** WeasyPrint. **CSV** nativo. **Correo:** API HTTP de Brevo (Gmail SMTP en local).
 - **Tareas programadas:** management commands ejecutables por cron (sin Celery).
 - **Producción:** Gunicorn + WhiteNoise, desplegable en Render con Docker.
 
@@ -100,7 +100,7 @@ Todas las credenciales se leen del entorno (`.env` en local). Ver `.env.example`
 | `BREVO_API_KEY` | API key de Brevo. Si está definida, se envía por Brevo (API HTTP). |
 | `EMAIL_ENABLED` | `True` para enviar por Gmail SMTP en local; `False` → consola. |
 | `EMAIL_HOST_USER` / `EMAIL_HOST_PASSWORD` | Correo y contraseña de aplicación de Gmail. |
-| `DEFAULT_FROM_EMAIL` | Remitente de los correos. |
+| `DEFAULT_FROM_EMAIL` | Remitente de los correos (dominio autenticado en Brevo, p. ej. `VATISHE <no-reply@vatishesrl.qd.je>`). |
 | `CRON_TOKEN` | Token para el endpoint de tareas programadas por HTTP. |
 | `MAX_UPLOAD_SIZE_MB` | Tamaño máximo de comprobantes (compresión de imágenes). |
 | `PAGINACION_POR_PAGINA` | Registros por página en los listados (20). |
@@ -140,8 +140,11 @@ restricción de contrato único activo, averías y control de acceso por rol.
    **S3 access key** para las variables `SUPABASE_S3_*`.
 2. **Correo (Brevo):** Render (y muchos hostings gratuitos) **bloquea el SMTP saliente**,
    así que en producción se envía por la **API HTTP de Brevo** (gratis, 300 correos/día).
-   Crea una cuenta en brevo.com, **verifica el remitente** (p. ej. tu Gmail) y genera una
-   **API key**; ponla en `BREVO_API_KEY`. En local puedes seguir usando Gmail SMTP
+   Crea una cuenta en brevo.com, genera una **API key** (v3) para `BREVO_API_KEY` y
+   **autentica tu dominio** en *Domains* (SPF/DKIM/DMARC) para enviar desde una
+   dirección propia como `no-reply@tudominio` en `DEFAULT_FROM_EMAIL`. Si delegas los
+   nameservers del dominio a Brevo (`ns1/ns2.sendinblue.com`), Brevo añade esos
+   registros automáticamente. En local puedes seguir usando Gmail SMTP
    (`EMAIL_ENABLED=True`) o dejar los correos en consola.
 3. **Render:** conecta el repositorio; el `render.yaml` define el servicio web (Docker).
    Completa en el panel las variables marcadas como `sync: false`. Render construye la
