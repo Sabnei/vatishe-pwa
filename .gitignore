@@ -220,8 +220,10 @@ __marimo__/
 # --- VATISHE ---
 /staticfiles/
 /media/
-/static/css/vatishe.css
 /bin/tailwindcss
+# Nota: static/css/vatishe.css (Tailwind compilado) SÍ se versiona para que
+# el despliegue en Render/Docker no requiera compilarlo. Recompílalo con
+# ./scripts/build_css.sh tras cambiar plantillas o el tema.
 
 # Claude
 .claude

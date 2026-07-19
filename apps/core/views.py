@@ -1,8 +1,11 @@
 """Vistas del núcleo: punto de entrada y despacho por rol."""
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 
 @login_required
@@ -95,3 +98,19 @@ def service_worker(request):
 def offline(request):
     """Página mostrada por el service worker cuando no hay conexión (PWA)."""
     return render(request, "offline.html")
+
+
+@csrf_exempt
+@require_POST
+def cron_tareas_diarias(request):
+    """Dispara las tareas diarias por HTTP, protegido con CRON_TOKEN.
+
+    Pensado para hosting sin cron nativo (p. ej. Render free): un cron externo
+    hace POST a esta URL con el token. Sin token válido responde 403.
+    """
+    from apps.core.tareas import ejecutar_tareas_diarias
+
+    token = request.headers.get("X-Cron-Token") or request.POST.get("token", "")
+    if not settings.CRON_TOKEN or token != settings.CRON_TOKEN:
+        return HttpResponseForbidden("Token inválido.")
+    return JsonResponse({"ok": True, "resultado": ejecutar_tareas_diarias()})

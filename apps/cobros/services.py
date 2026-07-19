@@ -1,14 +1,16 @@
-"""Lógica de negocio de cobros: generación mensual y multas (RF-004/RF-007)."""
+"""Lógica de negocio de cobros: generación, multas y recordatorios (RF-004/007/010)."""
 
 import calendar
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal
 
+from django.conf import settings
 from django.utils import timezone
 
 from apps.cobros.models import Cobro, Multa
 from apps.contratos.models import Contrato
-from apps.core.models import ConfiguracionSistema
+from apps.core.models import ConfiguracionSistema, RegistroCorreo
+from apps.core.notificaciones import enviar_correo
 
 
 def calcular_fecha_vencimiento(anio, mes, dia):
@@ -116,3 +118,52 @@ def aplicar_multas(fecha=None):
         total += monto
 
     return {"aplicadas": aplicadas, "total": total, "fecha": hoy}
+
+
+def enviar_recordatorios(fecha=None):
+    """Envía recordatorios de pago N días antes del vencimiento (RF-010).
+
+    N = ``dias_anticipacion_recordatorio`` de la configuración. Solo se envía a
+    inquilinos con saldo pendiente y correo, y no se duplica (bitácora
+    ``RegistroCorreo`` con clave por cobro). Devuelve un resumen.
+    """
+    hoy = fecha or timezone.localdate()
+    config = ConfiguracionSistema.cargar()
+    objetivo = hoy + timedelta(days=config.dias_anticipacion_recordatorio)
+
+    cobros = (
+        Cobro.objects.filter(fecha_vencimiento=objetivo)
+        .exclude(estado=Cobro.Estado.PAGADO)
+        .select_related("inquilino", "apartamento")
+    )
+
+    enviados = 0
+    omitidos = 0
+    for cobro in cobros:
+        inquilino = cobro.inquilino
+        saldo = cobro.saldo_pendiente
+        if saldo <= 0 or not inquilino.email:
+            omitidos += 1
+            continue
+        cuerpo = (
+            f"Hola {inquilino.get_full_name() or inquilino.username},\n\n"
+            f"Le recordamos que su cobro de {cobro.periodo_display} "
+            f"({cobro.apartamento.codigo}) por un saldo de ₡{saldo:,.0f} vence el "
+            f"{cobro.fecha_vencimiento.strftime('%d/%m/%Y')}.\n\n"
+            f"Puede registrar su abono en: {settings.SITE_URL}\n\n"
+            f"Gracias,\nVATISHE"
+        )
+        registro = enviar_correo(
+            tipo=RegistroCorreo.Tipo.RECORDATORIO,
+            destinatario=inquilino.email,
+            asunto=f"VATISHE — Recordatorio de pago ({cobro.periodo_display})",
+            cuerpo=cuerpo,
+            clave_unicidad=f"recordatorio:cobro:{cobro.pk}",
+            evitar_duplicado=True,
+        )
+        if registro is None:
+            omitidos += 1  # ya se había enviado
+        else:
+            enviados += 1
+
+    return {"enviados": enviados, "omitidos": omitidos, "objetivo": objetivo}

@@ -11,4 +11,5 @@ urlpatterns = [
     path("proximamente/", views.proximamente, name="proximamente"),
     path("offline/", views.offline, name="offline"),
     path("sw.js", views.service_worker, name="service_worker"),
+    path("cron/tareas-diarias/", views.cron_tareas_diarias, name="cron_tareas_diarias"),
 ]

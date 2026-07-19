@@ -1,0 +1,55 @@
+# Blueprint de despliegue en Render (https://render.com).
+# La base de datos y el almacenamiento son externos (Supabase), por eso aquí
+# solo se define el servicio web (y, opcionalmente, un cron).
+services:
+  - type: web
+    name: vatishe
+    runtime: docker
+    plan: free
+    healthCheckPath: /cuentas/login/
+    autoDeploy: true
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true          # Render genera una clave segura
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        sync: false                  # p. ej. vatishe.onrender.com
+      - key: CSRF_TRUSTED_ORIGINS
+        sync: false                  # p. ej. https://vatishe.onrender.com
+      - key: SITE_URL
+        sync: false
+      - key: DATABASE_URL
+        sync: false                  # pooler de Supabase (puerto 6543)
+      - key: DB_DISABLE_SERVER_SIDE_CURSORS
+        value: "True"
+      - key: USE_SUPABASE_STORAGE
+        value: "True"
+      - key: SUPABASE_S3_ACCESS_KEY_ID
+        sync: false
+      - key: SUPABASE_S3_SECRET_ACCESS_KEY
+        sync: false
+      - key: SUPABASE_S3_BUCKET
+        value: vatishe
+      - key: SUPABASE_S3_ENDPOINT_URL
+        sync: false
+      - key: SUPABASE_S3_REGION
+        sync: false
+      - key: EMAIL_ENABLED
+        value: "True"
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        sync: false
+      - key: CRON_TOKEN
+        generateValue: true
+
+  # Cron diario (requiere plan de pago en Render). En plan gratuito usa un cron
+  # externo que haga POST a /cron/tareas-diarias/ con el header X-Cron-Token.
+  # - type: cron
+  #   name: vatishe-tareas-diarias
+  #   runtime: docker
+  #   schedule: "0 6 * * *"
+  #   dockerCommand: python manage.py tareas_diarias

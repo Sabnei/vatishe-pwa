@@ -1,0 +1,15 @@
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
+db.sqlite3
+/media
+/staticfiles
+.env
+*.md
+!README.md
+bin/tailwindcss
+/tmp
+.claude
+scratchpad

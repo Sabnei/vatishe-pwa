@@ -140,6 +140,12 @@ else:
 # --------------------------------------------------------------------------- #
 AUTH_USER_MODEL = "cuentas.Usuario"
 
+# Permite iniciar sesión con nombre de usuario o correo electrónico.
+AUTHENTICATION_BACKENDS = [
+    "apps.cuentas.backends.UsuarioOEmailBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -235,6 +241,7 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
     SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "2592000"))
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
