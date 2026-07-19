@@ -1,0 +1,107 @@
+{% extends "base_admin.html" %}
+{% load vatishe_extras %}
+{% block titulo %}Reporte de ganancias{% endblock %}
+{% block main_pb %}pb-4{% endblock %}
+
+{% block contenido %}
+<div class="space-y-5">
+  <h1 class="font-display text-2xl font-bold text-primary">Reportes</h1>
+  {% include "reportes/_tabs.html" with activo="ganancias" %}
+
+  {# Filtros #}
+  <form method="get" class="card p-4">
+    {% include "partials/campos_form.html" with form=form %}
+    <button type="submit" class="btn-primary w-full">Ver reporte</button>
+  </form>
+
+  {% if datos %}
+  <p class="text-sm text-ink-variant text-center">{{ datos.mes_nombre }} {{ datos.anio }}</p>
+
+  {# Anillo de recaudación #}
+  <div class="card p-6 flex flex-col items-center">
+    <div class="relative w-40 h-40 flex items-center justify-center">
+      <svg class="w-full h-full -rotate-90" viewBox="0 0 160 160">
+        <circle cx="80" cy="80" r="70" fill="transparent" stroke="#ebe7e9" stroke-width="12"></circle>
+        <circle cx="80" cy="80" r="70" fill="transparent" stroke="#1a1a2e" stroke-width="12"
+                stroke-dasharray="{{ datos.anillo_total }}" stroke-dashoffset="{{ datos.anillo_offset }}" stroke-linecap="round"></circle>
+      </svg>
+      <div class="absolute inset-0 flex flex-col items-center justify-center">
+        <span class="font-display text-3xl font-bold text-primary">{{ datos.pct_recaudado }}%</span>
+        <span class="text-xs font-bold uppercase tracking-wide text-ink-variant">Recaudado</span>
+      </div>
+    </div>
+    <p class="mt-3 text-sm text-ink-variant text-center">
+      {{ datos.total_recibido|colones }} recibidos de {{ datos.total_esperado|colones }} esperados
+    </p>
+  </div>
+
+  {# Tarjetas de totales #}
+  <div class="space-y-3">
+    <div class="card p-4 border-l-4 border-l-primary">
+      <p class="form-label mb-0">Total cobrado (cargos + multas)</p>
+      <p class="font-display text-xl font-bold text-primary">{{ datos.total_esperado|colones }}</p>
+    </div>
+    <div class="card p-4 border-l-4 border-l-success">
+      <p class="form-label mb-0">Total recibido (aprobado)</p>
+      <p class="font-display text-xl font-bold text-success">{{ datos.total_recibido|colones }}</p>
+      {% if datos.total_pendiente_verif %}<p class="text-xs text-warning-fg">+ {{ datos.total_pendiente_verif|colones }} pendiente de verificación</p>{% endif %}
+    </div>
+    <div class="card p-4 border-l-4 border-l-accent">
+      <p class="form-label mb-0">Saldo pendiente</p>
+      <p class="font-display text-xl font-bold text-accent">{{ datos.total_saldo|colones }}</p>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <div class="card p-4"><p class="form-label mb-0">Multas</p><p class="font-semibold text-ink">{{ datos.total_multas|colones }}</p></div>
+      <div class="card p-4"><p class="form-label mb-0">Gastos reparación</p><p class="font-semibold text-danger">{{ datos.total_gastos|colones }}</p></div>
+    </div>
+    <div class="card p-4 bg-primary text-primary-fg">
+      <p class="text-xs font-bold uppercase tracking-wide opacity-80">Ganancia neta (recibido − gastos)</p>
+      <p class="font-display text-2xl font-bold">{{ datos.ganancia_neta|colones }}</p>
+    </div>
+  </div>
+
+  {# Tabla por apartamento #}
+  <section>
+    <h2 class="font-display text-lg font-semibold text-primary mb-2">Detalle por apartamento</h2>
+    <div class="card overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead>
+          <tr class="bg-surface-high text-ink-variant">
+            <th class="p-3 text-xs font-bold uppercase">Apto</th>
+            <th class="p-3 text-xs font-bold uppercase text-right">Cobro</th>
+            <th class="p-3 text-xs font-bold uppercase text-right">Recibido</th>
+            <th class="p-3 text-xs font-bold uppercase text-right">Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in datos.filas %}
+          <tr class="border-t border-outline-variant/60">
+            <td class="p-3 font-semibold text-ink">{{ f.apartamento.codigo }}</td>
+            <td class="p-3 text-right text-ink">{{ f.esperado|colones }}</td>
+            <td class="p-3 text-right text-ink">{{ f.recibido|colones }}</td>
+            <td class="p-3 text-right">
+              {% if f.estado == "PAGADO" %}<span class="chip-success">Pagado</span>
+              {% elif f.estado == "PARCIAL" %}<span class="chip-warning">Parcial</span>
+              {% else %}<span class="chip-danger">Pendiente</span>{% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" class="p-6 text-center text-ink-variant">Sin datos para este periodo.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  {# Exportar #}
+  <div class="grid grid-cols-2 gap-3">
+    <a href="?{{ querystring }}{% if querystring %}&{% endif %}formato=pdf" class="btn-secondary">
+      <span class="material-symbols-outlined" style="font-size:20px">picture_as_pdf</span> PDF
+    </a>
+    <a href="?{{ querystring }}{% if querystring %}&{% endif %}formato=csv" class="btn-secondary">
+      <span class="material-symbols-outlined" style="font-size:20px">table_view</span> CSV
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

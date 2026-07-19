@@ -16,6 +16,7 @@ def inicio(request):
 def _dashboard_admin(request):
     """Panel del Administrador con métricas y alertas en vivo."""
     from apps.apartamentos.models import Apartamento
+    from apps.averias.models import Averia
     from apps.cobros.models import Cobro
     from apps.contratos.models import Contrato
     from apps.cuentas.models import Usuario
@@ -40,6 +41,9 @@ def _dashboard_admin(request):
         "comprobantes_pendientes": pendientes_verificacion[:5],
         "contratos_por_vencer": contratos_por_vencer[:5],
         "num_por_vencer": contratos_por_vencer.count(),
+        "num_averias_pendientes": Averia.objects.exclude(
+            estado=Averia.Estado.SOLUCIONADO
+        ).count(),
     }
     return render(request, "core/dashboard_admin.html", contexto)
 
@@ -78,3 +82,16 @@ def proximamente(request):
     """Placeholder para secciones aún no implementadas (se re-cablean por fase)."""
     seccion = request.GET.get("s", "Esta sección")
     return render(request, "core/proximamente.html", {"seccion": seccion})
+
+
+def service_worker(request):
+    """Sirve el service worker en la raíz para que su scope sea todo el sitio."""
+    respuesta = render(request, "pwa/sw.js", content_type="application/javascript")
+    respuesta["Service-Worker-Allowed"] = "/"
+    respuesta["Cache-Control"] = "no-cache"
+    return respuesta
+
+
+def offline(request):
+    """Página mostrada por el service worker cuando no hay conexión (PWA)."""
+    return render(request, "offline.html")

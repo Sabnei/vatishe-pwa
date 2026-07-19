@@ -59,5 +59,11 @@
       </a>
     {% endif %}
   </div>
+
+  {% if user.es_admin %}
+  <a href="{% url 'reportes:comprobante' abono.pk %}" target="_blank" class="btn-secondary w-full">
+    <span class="material-symbols-outlined" style="font-size:20px">print</span> Comprobante imprimible (PDF)
+  </a>
+  {% endif %}
 </div>
 {% endblock %}

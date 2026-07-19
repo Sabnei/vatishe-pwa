@@ -1,0 +1,43 @@
+{% extends "base_admin.html" %}
+{% load vatishe_extras %}
+{% block titulo %}Detalle de multa{% endblock %}
+
+{% block contenido %}
+<div class="space-y-4">
+  <div class="flex items-center gap-2">
+    <a href="{% url 'cobros:multas_lista' %}" class="text-ink-variant hover:text-primary flex items-center">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+    <h1 class="font-display text-2xl font-bold text-primary">Detalle de multa</h1>
+  </div>
+
+  <div class="card p-6 text-center">
+    <p class="form-label mb-0">Monto de la multa</p>
+    <p class="font-display text-4xl font-bold text-danger my-1">{{ multa.monto|colones }}</p>
+    {% if multa.porcentaje %}<p class="text-xs text-ink-variant">{{ multa.porcentaje|floatformat:0 }}% del saldo pendiente</p>{% endif %}
+    {% if multa.exonerada %}<span class="chip-neutral mt-2">Exonerada</span>{% else %}<span class="chip-danger mt-2">Activa</span>{% endif %}
+  </div>
+
+  <div class="card p-5 space-y-3">
+    <div class="flex justify-between"><span class="form-label mb-0">Cobro</span>
+      <a href="{% url 'cobros:detalle' multa.cobro.pk %}" class="text-accent font-semibold">{{ multa.cobro.apartamento.codigo }} · {{ multa.cobro.periodo_display }}</a></div>
+    <div class="flex justify-between"><span class="form-label mb-0">Inquilino</span><span class="text-ink">{{ multa.cobro.inquilino.get_full_name|default:multa.cobro.inquilino.username }}</span></div>
+    <div class="flex justify-between"><span class="form-label mb-0">Motivo</span><span class="text-ink">{{ multa.motivo }}</span></div>
+    <div class="flex justify-between"><span class="form-label mb-0">Fecha de aplicación</span><span class="text-ink">{{ multa.fecha_aplicacion|date:"d M Y" }}</span></div>
+  </div>
+
+  {% if multa.exonerada %}
+  <div class="card p-4 bg-surface-high">
+    <p class="form-label mb-1">Exonerada</p>
+    <p class="text-sm text-ink">{{ multa.motivo_exoneracion }}</p>
+    <p class="text-xs text-ink-variant mt-1">
+      Por {{ multa.exonerada_por.get_full_name|default:multa.exonerada_por.username }} · {{ multa.exonerada_en|date:"d M Y H:i" }}
+    </p>
+  </div>
+  {% else %}
+  <a href="{% url 'cobros:exonerar_multa' multa.pk %}" class="btn-secondary w-full">
+    <span class="material-symbols-outlined" style="font-size:20px">remove_circle</span> Exonerar multa
+  </a>
+  {% endif %}
+</div>
+{% endblock %}

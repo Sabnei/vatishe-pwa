@@ -1,0 +1,4 @@
+{% comment %}Chip de estado de una avería. Uso: with estado=averia.estado{% endcomment %}
+{% if estado == "SOLUCIONADO" %}<span class="chip-success">Solucionado</span>
+{% elif estado == "EN_REPARACION" %}<span class="chip-warning">En reparación</span>
+{% else %}<span class="chip-neutral">Pendiente</span>{% endif %}

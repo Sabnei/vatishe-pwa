@@ -1,0 +1,45 @@
+{% load vatishe_extras %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<style>
+  @page { size: A4; margin: 1.8cm 1.5cm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Helvetica", "Arial", sans-serif; color: #1c1b1d; font-size: 11px; }
+  .cabecera { border-bottom: 3px solid #1a1a2e; padding-bottom: 10px; margin-bottom: 18px;
+              display: flex; justify-content: space-between; align-items: flex-end; }
+  .marca { font-size: 22px; font-weight: 700; color: #1a1a2e; letter-spacing: -0.5px; }
+  .subtitulo { font-size: 13px; color: #47464c; }
+  .meta { text-align: right; font-size: 10px; color: #78767d; }
+  h2 { font-size: 13px; color: #1a1a2e; margin: 16px 0 8px; }
+  .tarjetas { display: flex; gap: 10px; margin-bottom: 14px; }
+  .tarjeta { flex: 1; border: 1px solid #c8c5cd; border-left: 4px solid #1a1a2e; border-radius: 6px; padding: 8px 10px; }
+  .tarjeta .etq { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: #78767d; }
+  .tarjeta .val { font-size: 15px; font-weight: 700; margin-top: 2px; }
+  .verde { border-left-color: #2e7d32; } .verde .val { color: #2e7d32; }
+  .naranja { border-left-color: #ff8c00; } .naranja .val { color: #ff8c00; }
+  table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+  th { background: #ebe7e9; text-align: left; padding: 6px 8px; font-size: 9px; text-transform: uppercase; color: #47464c; }
+  td { padding: 6px 8px; border-top: 1px solid #e5e1e3; }
+  .num { text-align: right; }
+  tfoot td { font-weight: 700; border-top: 2px solid #1a1a2e; background: #f6f2f4; }
+  .chip { font-size: 9px; padding: 1px 6px; border-radius: 8px; font-weight: 700; }
+  .c-pagado { background: #c8e6c9; color: #0b3d0f; }
+  .c-parcial { background: #ffe0b2; color: #4a2c00; }
+  .c-pend { background: #ffdad6; color: #93000a; }
+  .pie { margin-top: 24px; padding-top: 8px; border-top: 1px solid #c8c5cd; font-size: 9px; color: #78767d; text-align: center; }
+</style>
+</head>
+<body>
+  <div class="cabecera">
+    <div>
+      <div class="marca">{{ nombre_empresa|default:"VATISHE S.R.L." }}</div>
+      <div class="subtitulo">{% block subtitulo %}{% endblock %}</div>
+    </div>
+    <div class="meta">Generado: {{ generado|date:"d/m/Y H:i" }}</div>
+  </div>
+  {% block cuerpo %}{% endblock %}
+  <div class="pie">VATISHE — Gestión de cobros y pagos de alquiler · Documento generado automáticamente</div>
+</body>
+</html>

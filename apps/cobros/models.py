@@ -126,13 +126,13 @@ class Cobro(ModeloBase):
         return restante if restante > 0 else Decimal("0")
 
     def calcular_estado(self):
-        saldo = self.saldo
-        if saldo <= 0:
+        if self.saldo <= 0:
             return self.Estado.PAGADO
-        if self.total_abonado > 0:
-            return self.Estado.PARCIAL
+        # La multa tiene precedencia visual para resaltar la morosidad.
         if self.total_multas > 0:
             return self.Estado.CON_MULTA
+        if self.total_abonado > 0:
+            return self.Estado.PARCIAL
         return self.Estado.PENDIENTE
 
     def actualizar_estado(self, guardar=True):
@@ -141,3 +141,54 @@ class Cobro(ModeloBase):
         if guardar:
             self.save(update_fields=["estado", "actualizado_en"])
         return self.estado
+
+
+class Multa(ModeloBase):
+    """Recargo por morosidad sobre un cobro (RF-007).
+
+    Se aplica automáticamente al día siguiente del vencimiento si hay saldo
+    pendiente. El Administrador puede exonerarla indicando un motivo; una multa
+    exonerada deja de sumar al cargo del cobro.
+    """
+
+    cobro = models.ForeignKey(
+        Cobro, on_delete=models.CASCADE, related_name="multas", verbose_name=_("cobro")
+    )
+    monto = models.DecimalField(_("monto"), max_digits=12, decimal_places=2)
+    porcentaje = models.DecimalField(
+        _("porcentaje aplicado"), max_digits=5, decimal_places=2, null=True, blank=True
+    )
+    motivo = models.CharField(_("motivo"), max_length=120, default="Morosidad")
+    fecha_aplicacion = models.DateField(_("fecha de aplicación"))
+    exonerada = models.BooleanField(_("exonerada"), default=False)
+    motivo_exoneracion = models.TextField(_("motivo de exoneración"), blank=True)
+    exonerada_por = models.ForeignKey(
+        "cuentas.Usuario",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="multas_exoneradas",
+        verbose_name=_("exonerada por"),
+    )
+    exonerada_en = models.DateTimeField(_("exonerada en"), null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("multa")
+        verbose_name_plural = _("multas")
+        ordering = ["-fecha_aplicacion", "-creado_en"]
+
+    def __str__(self):
+        return f"Multa {self.monto} · {self.cobro}"
+
+    def exonerar(self, admin, motivo):
+        from django.utils import timezone
+
+        self.exonerada = True
+        self.motivo_exoneracion = motivo
+        self.exonerada_por = admin
+        self.exonerada_en = timezone.now()
+        self.save(update_fields=[
+            "exonerada", "motivo_exoneracion", "exonerada_por", "exonerada_en",
+            "actualizado_en",
+        ])
+        self.cobro.actualizar_estado()

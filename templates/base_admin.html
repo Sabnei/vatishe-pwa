@@ -21,7 +21,7 @@
     <span class="material-symbols-outlined" {% if a == 'apartamentos' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>apartment</span>
     <span class="text-[10px] font-bold uppercase tracking-wide">Aptos.</span>
   </a>
-  <a href="{% url 'core:proximamente' %}?s=Reportes"
+  <a href="{% url 'reportes:ganancias' %}"
      class="flex flex-col items-center gap-1 min-w-[60px] py-1 {% if a == 'reportes' %}text-accent{% else %}text-ink-variant hover:text-primary{% endif %}">
     <span class="material-symbols-outlined" {% if a == 'reportes' %}style="font-variation-settings: 'FILL' 1;"{% endif %}>bar_chart</span>
     <span class="text-[10px] font-bold uppercase tracking-wide">Reportes</span>

@@ -66,6 +66,26 @@
     </div>
   </section>
 
+  {# Multas del cobro #}
+  {% with multas=cobro.multas.all %}
+  {% if multas %}
+  <section class="space-y-2">
+    <h2 class="font-display text-lg font-semibold text-primary">Multas</h2>
+    <div class="card divide-y divide-outline-variant/60">
+      {% for m in multas %}
+        <a href="{% url 'cobros:multa_detalle' m.pk %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
+          <div>
+            <p class="font-medium text-ink">{{ m.monto|colones }}</p>
+            <p class="text-xs text-ink-variant">{{ m.motivo }} · {{ m.fecha_aplicacion|date:"d M Y" }}</p>
+          </div>
+          {% if m.exonerada %}<span class="chip-neutral">Exonerada</span>{% else %}<span class="chip-danger">Activa</span>{% endif %}
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+  {% endwith %}
+
   <a href="{% url 'cobros:ajustar' cobro.pk %}" class="btn-secondary w-full">
     <span class="material-symbols-outlined" style="font-size:20px">tune</span> Ajustar cobro
   </a>

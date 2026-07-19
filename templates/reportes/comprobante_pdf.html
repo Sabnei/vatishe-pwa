@@ -1,0 +1,37 @@
+{% extends "reportes/pdf_base.html" %}
+{% load vatishe_extras %}
+{% block subtitulo %}Comprobante de abono #{{ abono.pk }}{% endblock %}
+
+{% block cuerpo %}
+<div class="tarjetas">
+  <div class="tarjeta verde">
+    <div class="etq">Monto del abono</div>
+    <div class="val">{{ abono.monto|colones }}</div>
+  </div>
+  <div class="tarjeta">
+    <div class="etq">Estado</div>
+    <div class="val" style="font-size:12px;">
+      {% if abono.aprobado %}Aprobado{% elif abono.rechazado %}Rechazado{% else %}Pendiente{% endif %}
+    </div>
+  </div>
+</div>
+
+<h2>Datos del pago</h2>
+<table>
+  <tbody>
+    <tr><td style="width:40%;color:#78767d;">Inquilino</td><td>{{ abono.cobro.inquilino.get_full_name|default:abono.cobro.inquilino.username }}</td></tr>
+    <tr><td style="color:#78767d;">Apartamento</td><td>{{ abono.cobro.apartamento.codigo }}</td></tr>
+    <tr><td style="color:#78767d;">Cobro</td><td>{{ abono.cobro.periodo_display }}</td></tr>
+    <tr><td style="color:#78767d;">Fecha del pago</td><td>{{ abono.fecha|date:"d/m/Y" }}</td></tr>
+    <tr><td style="color:#78767d;">Método</td><td>{{ abono.get_metodo_display }}</td></tr>
+    {% if abono.referencia %}<tr><td style="color:#78767d;">Referencia</td><td>{{ abono.referencia }}</td></tr>{% endif %}
+    {% if abono.verificado_por %}<tr><td style="color:#78767d;">Verificado por</td><td>{{ abono.verificado_por.get_full_name|default:abono.verificado_por.username }} · {{ abono.verificado_en|date:"d/m/Y H:i" }}</td></tr>{% endif %}
+  </tbody>
+</table>
+
+<p style="margin-top:22px;font-size:10px;color:#78767d;">
+  Este comprobante certifica el registro del abono en el sistema VATISHE. El pago fue
+  realizado por medios externos (SINPE Móvil, transferencia o depósito) y verificado por
+  la administración.
+</p>
+{% endblock %}

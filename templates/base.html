@@ -7,6 +7,14 @@
   <meta name="theme-color" content="#1a1a2e">
   <title>{% block titulo %}VATISHE{% endblock %} · {{ nombre_empresa }}</title>
 
+  {# PWA #}
+  <link rel="manifest" href="{% static 'pwa/manifest.webmanifest' %}">
+  <link rel="icon" href="{% static 'pwa/favicon.png' %}" sizes="64x64">
+  <link rel="apple-touch-icon" href="{% static 'pwa/apple-touch-icon.png' %}">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="VATISHE">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -60,5 +68,15 @@
     {% block navegacion_inferior %}{% endblock %}
   </div>
   {% block scripts %}{% endblock %}
+  <script>
+    // Registro del service worker (PWA).
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("/sw.js").catch(function (e) {
+          console.warn("SW no registrado:", e);
+        });
+      });
+    }
+  </script>
 </body>
 </html>

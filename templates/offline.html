@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>Sin conexión · VATISHE</title>
+  <link rel="stylesheet" href="{% static 'css/vatishe.css' %}">
+</head>
+<body class="min-h-full bg-surface text-ink font-sans antialiased">
+  <div class="mx-auto w-full max-w-app min-h-screen flex flex-col items-center justify-center text-center px-6">
+    <div class="w-16 h-16 rounded-full bg-primary flex items-center justify-center mb-4">
+      <span class="material-symbols-outlined text-primary-fg" style="font-size:32px">wifi_off</span>
+    </div>
+    <h1 class="font-display text-xl font-bold text-primary">Sin conexión</h1>
+    <p class="mt-2 text-sm text-ink-variant max-w-xs">
+      No hay conexión a internet. Revise su red e intente de nuevo.
+    </p>
+    <button onclick="location.reload()" class="btn-primary mt-6">Reintentar</button>
+  </div>
+</body>
+</html>

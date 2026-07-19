@@ -1,0 +1,28 @@
+{% extends "base_admin.html" %}
+{% load vatishe_extras %}
+{% block titulo %}Exonerar multa{% endblock %}
+
+{% block contenido %}
+<div class="space-y-4">
+  <div class="flex items-center gap-2">
+    <a href="{% url 'cobros:multa_detalle' multa.pk %}" class="text-ink-variant hover:text-primary flex items-center">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+    <h1 class="font-display text-2xl font-bold text-primary">Exonerar multa</h1>
+  </div>
+
+  <div class="card p-4">
+    <p class="text-sm text-ink-variant">
+      Va a exonerar la multa de <strong class="text-danger">{{ multa.monto|colones }}</strong>
+      del cobro {{ multa.cobro.apartamento.codigo }} · {{ multa.cobro.periodo_display }}.
+      El monto dejará de sumar al saldo del cobro.
+    </p>
+  </div>
+
+  <form method="post" class="card p-5">
+    {% csrf_token %}
+    {% include "partials/campos_form.html" with form=form %}
+    <button type="submit" class="btn-primary w-full h-12 mt-2">Confirmar exoneración</button>
+  </form>
+</div>
+{% endblock %}

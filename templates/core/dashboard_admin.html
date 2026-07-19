@@ -120,12 +120,26 @@
         </span>
         {% if num_por_verificar %}<span class="chip-danger">{{ num_por_verificar }}</span>{% else %}<span class="material-symbols-outlined text-outline">chevron_right</span>{% endif %}
       </a>
-      <a href="{% url 'core:proximamente' %}?s=Reportes" class="flex items-center justify-between p-4 hover:bg-surface-low">
+      <a href="{% url 'cobros:multas_lista' %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
+        <span class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary">gavel</span>
+          <span class="font-semibold text-ink">Multas</span>
+        </span>
+        <span class="material-symbols-outlined text-outline">chevron_right</span>
+      </a>
+      <a href="{% url 'averias:gestion_lista' %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
+        <span class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary">build</span>
+          <span class="font-semibold text-ink">Averías</span>
+        </span>
+        {% if num_averias_pendientes %}<span class="chip-warning">{{ num_averias_pendientes }}</span>{% else %}<span class="material-symbols-outlined text-outline">chevron_right</span>{% endif %}
+      </a>
+      <a href="{% url 'reportes:ganancias' %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
         <span class="flex items-center gap-3">
           <span class="material-symbols-outlined text-primary">bar_chart</span>
           <span class="font-semibold text-ink">Reportes</span>
         </span>
-        <span class="chip-neutral">Próximamente</span>
+        <span class="material-symbols-outlined text-outline">chevron_right</span>
       </a>
       <a href="{% url 'admin:index' %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
         <span class="flex items-center gap-3">

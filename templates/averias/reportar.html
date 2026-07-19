@@ -1,0 +1,49 @@
+{% extends "base_inquilino.html" %}
+{% block titulo %}Reportar avería{% endblock %}
+{% block barra_titulo %}Reportar avería{% endblock %}
+{% block main_pb %}pb-4{% endblock %}
+
+{% block contenido %}
+<div class="space-y-5">
+  <form method="post" enctype="multipart/form-data" class="card p-5 space-y-4">
+    {% csrf_token %}
+    <p class="form-label">Detalles de la incidencia</p>
+    {% include "partials/campos_form.html" with form=form %}
+
+    {# Fotos (opcionales, múltiples) #}
+    <div>
+      <label class="form-label" for="id_fotos">Fotos del problema (opcional)</label>
+      <input type="file" name="fotos" id="id_fotos" multiple accept="image/*"
+             class="form-input file:mr-3 file:rounded file:border-0 file:bg-primary file:text-primary-fg file:px-3 file:py-1.5 file:text-sm">
+      <p class="text-xs text-ink-variant mt-1">Puede adjuntar varias imágenes. Se comprimen automáticamente.</p>
+    </div>
+
+    <button type="submit" class="btn-primary w-full h-12">
+      <span class="material-symbols-outlined" style="font-size:20px">send</span> Enviar reporte
+    </button>
+  </form>
+
+  {% if mis_averias %}
+  <section class="space-y-2">
+    <h3 class="font-display text-lg font-semibold text-primary">Mis reportes anteriores</h3>
+    <div class="card divide-y divide-outline-variant/60">
+      {% for a in mis_averias %}
+        <a href="{% url 'averias:detalle' a.pk %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary shrink-0">
+              <span class="material-symbols-outlined">{{ a.icono }}</span>
+            </div>
+            <div class="min-w-0">
+              <p class="font-semibold text-ink truncate">{{ a.get_area_display }}</p>
+              <p class="text-xs text-ink-variant">{{ a.creado_en|date:"d M Y" }}</p>
+            </div>
+          </div>
+          {% include "averias/_chip_estado.html" with estado=a.estado %}
+        </a>
+      {% endfor %}
+    </div>
+    <a href="{% url 'averias:mis_averias' %}" class="text-xs font-bold uppercase text-accent">Ver todas</a>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

@@ -24,6 +24,15 @@ class GenerarCobrosForm(EstiloWidgetsMixin, forms.Form):
         self.estilizar_widgets()
 
 
+class ExonerarMultaForm(forms.Form):
+    """Motivo obligatorio al exonerar una multa (RF-007, HU-09)."""
+
+    motivo = forms.CharField(
+        label="Motivo de la exoneración",
+        widget=forms.Textarea(attrs={"rows": 3, "class": "form-input"}),
+    )
+
+
 class CobroAjusteForm(EstiloWidgetsMixin, forms.ModelForm):
     """Ajuste manual de un cobro por el Administrador (RF-004)."""
 

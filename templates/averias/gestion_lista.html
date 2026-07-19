@@ -1,0 +1,41 @@
+{% extends "base_admin.html" %}
+{% block titulo %}Averías{% endblock %}
+
+{% block contenido %}
+<div class="space-y-4">
+  <h1 class="font-display text-2xl font-bold text-primary">Averías</h1>
+
+  <form method="get" class="flex gap-2">
+    <select name="estado" class="form-input bg-surface-lowest" onchange="this.form.submit()">
+      <option value="">Todas</option>
+      {% for val, label in estados %}
+        <option value="{{ val }}" {% if estado == val %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </form>
+
+  <div class="card divide-y divide-outline-variant/60">
+    {% for a in averias %}
+      <a href="{% url 'averias:gestion_detalle' a.pk %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary shrink-0">
+            <span class="material-symbols-outlined">{{ a.icono }}</span>
+          </div>
+          <div class="min-w-0">
+            <p class="font-semibold text-ink truncate">{{ a.get_area_display }} · {{ a.apartamento.codigo }}</p>
+            <p class="text-xs text-ink-variant truncate">{{ a.inquilino.get_full_name|default:a.inquilino.username }} · {{ a.creado_en|date:"d M Y" }}</p>
+          </div>
+        </div>
+        {% include "averias/_chip_estado.html" with estado=a.estado %}
+      </a>
+    {% empty %}
+      <div class="p-8 text-center text-ink-variant">
+        <span class="material-symbols-outlined mb-2" style="font-size:36px">build</span>
+        <p class="text-sm">No hay averías reportadas.</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% include "partials/paginacion.html" %}
+</div>
+{% endblock %}

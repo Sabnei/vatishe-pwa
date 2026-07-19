@@ -1,0 +1,67 @@
+{% extends "reportes/pdf_base.html" %}
+{% load vatishe_extras %}
+{% block subtitulo %}Reporte de ganancias · {{ datos.mes_nombre }} {{ datos.anio }}{% endblock %}
+
+{% block cuerpo %}
+<div class="tarjetas">
+  <div class="tarjeta">
+    <div class="etq">Total cobrado</div>
+    <div class="val">{{ datos.total_esperado|colones }}</div>
+  </div>
+  <div class="tarjeta verde">
+    <div class="etq">Total recibido</div>
+    <div class="val">{{ datos.total_recibido|colones }}</div>
+  </div>
+  <div class="tarjeta naranja">
+    <div class="etq">Saldo pendiente</div>
+    <div class="val">{{ datos.total_saldo|colones }}</div>
+  </div>
+</div>
+
+<div class="tarjetas">
+  <div class="tarjeta"><div class="etq">Multas</div><div class="val">{{ datos.total_multas|colones }}</div></div>
+  <div class="tarjeta"><div class="etq">Gastos de reparación</div><div class="val">{{ datos.total_gastos|colones }}</div></div>
+  <div class="tarjeta verde"><div class="etq">Ganancia neta</div><div class="val">{{ datos.ganancia_neta|colones }}</div></div>
+  <div class="tarjeta"><div class="etq">Recaudado</div><div class="val">{{ datos.pct_recaudado }}%</div></div>
+</div>
+
+<h2>Detalle por apartamento</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Apartamento</th><th class="num">Cargos</th><th class="num">Multas</th>
+      <th class="num">Recibido</th><th class="num">Saldo</th><th class="num">Gastos</th><th>Estado</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for f in datos.filas %}
+    <tr>
+      <td>{{ f.apartamento.codigo }}</td>
+      <td class="num">{{ f.cargos|colones }}</td>
+      <td class="num">{{ f.multas|colones }}</td>
+      <td class="num">{{ f.recibido|colones }}</td>
+      <td class="num">{{ f.saldo|colones }}</td>
+      <td class="num">{{ f.gastos|colones }}</td>
+      <td>
+        {% if f.estado == "PAGADO" %}<span class="chip c-pagado">Pagado</span>
+        {% elif f.estado == "PARCIAL" %}<span class="chip c-parcial">Parcial</span>
+        {% else %}<span class="chip c-pend">Pendiente</span>{% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="7" style="text-align:center;color:#78767d;">Sin datos para este periodo.</td></tr>
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    <tr>
+      <td>TOTALES</td>
+      <td class="num">{{ datos.total_cargos|colones }}</td>
+      <td class="num">{{ datos.total_multas|colones }}</td>
+      <td class="num">{{ datos.total_recibido|colones }}</td>
+      <td class="num">{{ datos.total_saldo|colones }}</td>
+      <td class="num">{{ datos.total_gastos|colones }}</td>
+      <td></td>
+    </tr>
+  </tfoot>
+</table>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "reportes/pdf_base.html" %}
+{% load vatishe_extras %}
+{% block subtitulo %}Reporte de morosidad · {{ datos.mes_nombre }}{% if datos.anio %} {{ datos.anio }}{% endif %}{% endblock %}
+
+{% block cuerpo %}
+<div class="tarjetas">
+  <div class="tarjeta"><div class="etq">Inquilinos morosos</div><div class="val">{{ datos.n_morosos }}</div></div>
+  <div class="tarjeta naranja"><div class="etq">Saldo total pendiente</div><div class="val">{{ datos.total_saldo|colones }}</div></div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Apartamento</th><th>Inquilino</th><th>Periodo</th><th>Vencimiento</th>
+      <th class="num">Atraso</th><th class="num">Multas</th><th class="num">Saldo</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for f in datos.filas %}
+    <tr>
+      <td>{{ f.cobro.apartamento.codigo }}</td>
+      <td>{{ f.cobro.inquilino.get_full_name|default:f.cobro.inquilino.username }}</td>
+      <td>{{ f.cobro.periodo_display }}</td>
+      <td>{{ f.cobro.fecha_vencimiento|date:"d/m/Y" }}</td>
+      <td class="num">{{ f.dias_atraso }} d</td>
+      <td class="num">{{ f.multas|colones }}</td>
+      <td class="num">{{ f.saldo|colones }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="7" style="text-align:center;color:#78767d;">No hay morosos.</td></tr>
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    <tr><td colspan="6">TOTAL</td><td class="num">{{ datos.total_saldo|colones }}</td></tr>
+  </tfoot>
+</table>
+{% endblock %}

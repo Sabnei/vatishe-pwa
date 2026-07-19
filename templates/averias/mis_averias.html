@@ -1,0 +1,39 @@
+{% extends "base_inquilino.html" %}
+{% block titulo %}Mis averías{% endblock %}
+{% block barra_titulo %}Mis averías{% endblock %}
+{% block main_pb %}pb-4{% endblock %}
+
+{% block contenido %}
+<div class="space-y-4">
+  <div class="flex items-center justify-between">
+    <h1 class="font-display text-2xl font-bold text-primary">Mis averías</h1>
+    <a href="{% url 'averias:reportar' %}" class="btn-primary">
+      <span class="material-symbols-outlined" style="font-size:20px">add</span> Reportar
+    </a>
+  </div>
+
+  <div class="card divide-y divide-outline-variant/60">
+    {% for a in averias %}
+      <a href="{% url 'averias:detalle' a.pk %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary shrink-0">
+            <span class="material-symbols-outlined">{{ a.icono }}</span>
+          </div>
+          <div class="min-w-0">
+            <p class="font-semibold text-ink truncate">{{ a.get_area_display }} · {{ a.apartamento.codigo }}</p>
+            <p class="text-xs text-ink-variant truncate">{{ a.descripcion|truncatechars:40 }}</p>
+          </div>
+        </div>
+        {% include "averias/_chip_estado.html" with estado=a.estado %}
+      </a>
+    {% empty %}
+      <div class="p-8 text-center text-ink-variant">
+        <span class="material-symbols-outlined mb-2" style="font-size:36px">build</span>
+        <p class="text-sm">No ha reportado averías.</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% include "partials/paginacion.html" %}
+</div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends base_template|default:"base.html" %}
+{% load vatishe_extras %}
+{% block titulo %}Detalle de avería{% endblock %}
+{% block barra_titulo %}Detalle de avería{% endblock %}
+{% block main_pb %}pb-4{% endblock %}
+
+{% block contenido %}
+<div class="space-y-5">
+  <div class="flex items-center gap-2">
+    <a href="{% if user.es_admin %}{% url 'averias:gestion_lista' %}{% else %}{% url 'averias:mis_averias' %}{% endif %}"
+       class="text-ink-variant hover:text-primary flex items-center">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+    <h1 class="font-display text-2xl font-bold text-primary">Detalle de avería</h1>
+  </div>
+
+  {# Estado #}
+  <div class="card p-5 flex flex-col items-center">
+    <span class="material-symbols-outlined text-4xl {% if averia.estado == 'SOLUCIONADO' %}text-success{% elif averia.estado == 'EN_REPARACION' %}text-accent{% else %}text-ink-variant{% endif %}"
+          style="font-variation-settings: 'FILL' 1;">
+      {% if averia.estado == 'SOLUCIONADO' %}check_circle{% elif averia.estado == 'EN_REPARACION' %}build{% else %}schedule{% endif %}
+    </span>
+    <p class="mt-2 font-display text-lg font-semibold {% if averia.estado == 'SOLUCIONADO' %}text-success{% elif averia.estado == 'EN_REPARACION' %}text-accent{% else %}text-ink-variant{% endif %}">
+      {{ averia.get_estado_display }}
+    </p>
+    <p class="text-xs text-ink-variant">Reporte #{{ averia.pk }}</p>
+  </div>
+
+  {# Detalles #}
+  <div class="card p-5 space-y-4">
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <p class="form-label mb-0">Área afectada</p>
+        <p class="text-ink flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:18px">{{ averia.icono }}</span> {{ averia.get_area_display }}</p>
+      </div>
+      <div>
+        <p class="form-label mb-0">Fecha de reporte</p>
+        <p class="text-ink">{{ averia.creado_en|date:"d M Y" }}</p>
+      </div>
+    </div>
+    <div class="pt-3 border-t border-outline-variant">
+      <p class="form-label mb-0">Apartamento</p>
+      <p class="text-ink">{{ averia.apartamento.codigo }}</p>
+    </div>
+    <div>
+      <p class="form-label mb-0">Descripción</p>
+      <p class="text-ink leading-relaxed whitespace-pre-line">{{ averia.descripcion }}</p>
+    </div>
+    {% if averia.gasto %}
+    <div class="pt-3 border-t border-outline-variant flex justify-between">
+      <span class="form-label mb-0">Gasto de reparación</span>
+      <span class="font-semibold text-ink">{{ averia.gasto|colones }}</span>
+    </div>
+    {% endif %}
+  </div>
+
+  {# Fotos #}
+  {% if averia.fotos.all %}
+  <section class="space-y-2">
+    <h2 class="font-display text-lg font-semibold text-primary">Fotos adjuntas</h2>
+    <div class="flex gap-3 overflow-x-auto pb-2">
+      {% for f in averia.fotos.all %}
+        <a href="{% url 'averias:foto' f.pk %}" target="_blank" class="shrink-0">
+          <img src="{% url 'averias:foto' f.pk %}" alt="Foto de avería"
+               class="w-32 h-32 object-cover rounded-xl border border-outline-variant">
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# Línea de tiempo #}
+  <section class="card p-5">
+    <h2 class="font-display text-lg font-semibold text-primary mb-4">Estado del reporte</h2>
+    {% with e=averia.estado %}
+    <div class="relative space-y-6 pl-2">
+      <div class="absolute left-[11px] top-2 bottom-2 w-0.5 bg-outline-variant"></div>
+      {# Paso 1 #}
+      <div class="relative flex gap-4">
+        <div class="z-10 w-6 h-6 rounded-full bg-success flex items-center justify-center ring-4 ring-surface-lowest">
+          <span class="material-symbols-outlined text-white" style="font-size:14px;font-variation-settings:'FILL' 1;">check</span>
+        </div>
+        <div><p class="font-semibold text-ink">Reporte enviado</p><p class="text-xs text-ink-variant">{{ averia.creado_en|date:"d M Y, H:i" }}</p></div>
+      </div>
+      {# Paso 2 #}
+      <div class="relative flex gap-4 {% if e == 'PENDIENTE' %}opacity-50{% endif %}">
+        <div class="z-10 w-6 h-6 rounded-full flex items-center justify-center ring-4 ring-surface-lowest {% if e != 'PENDIENTE' %}bg-success{% else %}bg-outline-variant{% endif %}">
+          {% if e != 'PENDIENTE' %}<span class="material-symbols-outlined text-white" style="font-size:14px;font-variation-settings:'FILL' 1;">check</span>{% endif %}
+        </div>
+        <div><p class="font-semibold {% if e == 'EN_REPARACION' %}text-accent{% else %}text-ink{% endif %}">En reparación</p></div>
+      </div>
+      {# Paso 3 #}
+      <div class="relative flex gap-4 {% if e != 'SOLUCIONADO' %}opacity-50{% endif %}">
+        <div class="z-10 w-6 h-6 rounded-full flex items-center justify-center ring-4 ring-surface-lowest {% if e == 'SOLUCIONADO' %}bg-success{% else %}bg-outline-variant{% endif %}">
+          {% if e == 'SOLUCIONADO' %}<span class="material-symbols-outlined text-white" style="font-size:14px;font-variation-settings:'FILL' 1;">check</span>{% endif %}
+        </div>
+        <div><p class="font-semibold text-ink">Solucionado</p>{% if averia.fecha_solucion %}<p class="text-xs text-ink-variant">{{ averia.fecha_solucion|date:"d M Y" }}</p>{% endif %}</div>
+      </div>
+    </div>
+    {% endwith %}
+  </section>
+
+  {% if user.es_admin %}
+  <a href="{% url 'averias:gestion_detalle' averia.pk %}" class="btn-primary w-full">
+    <span class="material-symbols-outlined" style="font-size:20px">edit</span> Gestionar avería
+  </a>
+  {% endif %}
+</div>
+{% endblock %}

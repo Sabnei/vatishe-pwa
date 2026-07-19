@@ -1,0 +1,7 @@
+{% comment %}Pestañas de navegación entre reportes. Uso: with activo="ganancias"{% endcomment %}
+<div class="flex gap-2 bg-surface-container rounded-lg p-1">
+  <a href="{% url 'reportes:ganancias' %}"
+     class="flex-1 text-center rounded-md py-2 text-sm font-semibold {% if activo == 'ganancias' %}bg-surface-lowest text-primary shadow-card{% else %}text-ink-variant{% endif %}">Ganancias</a>
+  <a href="{% url 'reportes:morosidad' %}"
+     class="flex-1 text-center rounded-md py-2 text-sm font-semibold {% if activo == 'morosidad' %}bg-surface-lowest text-primary shadow-card{% else %}text-ink-variant{% endif %}">Morosidad</a>
+</div>

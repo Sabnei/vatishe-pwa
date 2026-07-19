@@ -1,0 +1,55 @@
+{% extends "base_admin.html" %}
+{% load vatishe_extras %}
+{% block titulo %}Gestionar avería{% endblock %}
+{% block main_pb %}pb-4{% endblock %}
+
+{% block contenido %}
+<div class="space-y-5">
+  <div class="flex items-center gap-2">
+    <a href="{% url 'averias:gestion_lista' %}" class="text-ink-variant hover:text-primary flex items-center">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+    <h1 class="font-display text-2xl font-bold text-primary">Gestionar avería</h1>
+  </div>
+
+  {# Datos del reporte #}
+  <div class="card p-5 space-y-3">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary">{{ averia.icono }}</span>
+        <p class="font-semibold text-ink">{{ averia.get_area_display }} · {{ averia.apartamento.codigo }}</p>
+      </div>
+      {% include "averias/_chip_estado.html" with estado=averia.estado %}
+    </div>
+    <p class="text-sm text-ink-variant">Reportada por {{ averia.inquilino.get_full_name|default:averia.inquilino.username }} · {{ averia.creado_en|date:"d M Y" }}</p>
+    <div class="pt-3 border-t border-outline-variant">
+      <p class="form-label mb-0">Descripción</p>
+      <p class="text-ink leading-relaxed whitespace-pre-line">{{ averia.descripcion }}</p>
+    </div>
+  </div>
+
+  {# Fotos #}
+  {% if averia.fotos.all %}
+  <section class="space-y-2">
+    <p class="form-label">Fotos adjuntas</p>
+    <div class="flex gap-3 overflow-x-auto pb-2">
+      {% for f in averia.fotos.all %}
+        <a href="{% url 'averias:foto' f.pk %}" target="_blank" class="shrink-0">
+          <img src="{% url 'averias:foto' f.pk %}" alt="Foto" class="w-32 h-32 object-cover rounded-xl border border-outline-variant">
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# Formulario de gestión #}
+  <form method="post" class="card p-5">
+    {% csrf_token %}
+    <p class="form-label">Actualizar avería</p>
+    {% include "partials/campos_form.html" with form=form %}
+    <button type="submit" class="btn-primary w-full h-12 mt-2">Guardar cambios</button>
+  </form>
+
+  <a href="{% url 'averias:detalle' averia.pk %}" class="btn-secondary w-full">Ver como lo ve el inquilino</a>
+</div>
+{% endblock %}
