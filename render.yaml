@@ -6,7 +6,7 @@ services:
     name: vatishe
     runtime: docker
     plan: free
-    healthCheckPath: /cuentas/login/
+    healthCheckPath: /ping/
     autoDeploy: true
     envVars:
       - key: SECRET_KEY

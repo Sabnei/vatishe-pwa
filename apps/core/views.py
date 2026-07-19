@@ -100,6 +100,16 @@ def offline(request):
     return render(request, "offline.html")
 
 
+def ping(request):
+    """Endpoint ultraligero para health-check y keep-alive (no toca la BD).
+
+    Útil para un cron externo que evite que el servicio gratuito se suspenda.
+    """
+    from django.http import HttpResponse
+
+    return HttpResponse("ok", content_type="text/plain")
+
+
 @csrf_exempt
 @require_POST
 def cron_tareas_diarias(request):
