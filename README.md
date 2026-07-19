@@ -97,7 +97,8 @@ Todas las credenciales se leen del entorno (`.env` en local). Ver `.env.example`
 | `USE_SUPABASE_STORAGE` | `True` para guardar archivos en Supabase Storage. |
 | `SUPABASE_S3_ACCESS_KEY_ID` / `SUPABASE_S3_SECRET_ACCESS_KEY` | Claves S3 de Supabase Storage. |
 | `SUPABASE_S3_BUCKET` / `SUPABASE_S3_ENDPOINT_URL` / `SUPABASE_S3_REGION` | Bucket privado y endpoint S3. |
-| `EMAIL_ENABLED` | `True` para enviar por Gmail; `False` → consola. |
+| `BREVO_API_KEY` | API key de Brevo. Si está definida, se envía por Brevo (API HTTP). |
+| `EMAIL_ENABLED` | `True` para enviar por Gmail SMTP en local; `False` → consola. |
 | `EMAIL_HOST_USER` / `EMAIL_HOST_PASSWORD` | Correo y contraseña de aplicación de Gmail. |
 | `DEFAULT_FROM_EMAIL` | Remitente de los correos. |
 | `CRON_TOKEN` | Token para el endpoint de tareas programadas por HTTP. |
@@ -137,8 +138,11 @@ restricción de contrato único activo, averías y control de acceso por rol.
 1. **Supabase:** crea un proyecto; obtén la cadena del **pooler** (Transaction, 6543)
    para `DATABASE_URL`; crea un **bucket privado** `vatishe` en Storage y una
    **S3 access key** para las variables `SUPABASE_S3_*`.
-2. **Gmail:** activa la verificación en dos pasos y crea una **contraseña de aplicación**
-   para `EMAIL_HOST_PASSWORD`.
+2. **Correo (Brevo):** Render (y muchos hostings gratuitos) **bloquea el SMTP saliente**,
+   así que en producción se envía por la **API HTTP de Brevo** (gratis, 300 correos/día).
+   Crea una cuenta en brevo.com, **verifica el remitente** (p. ej. tu Gmail) y genera una
+   **API key**; ponla en `BREVO_API_KEY`. En local puedes seguir usando Gmail SMTP
+   (`EMAIL_ENABLED=True`) o dejar los correos en consola.
 3. **Render:** conecta el repositorio; el `render.yaml` define el servicio web (Docker).
    Completa en el panel las variables marcadas como `sync: false`. Render construye la
    imagen (que instala las libs de WeasyPrint, recolecta estáticos y aplica migraciones

@@ -35,11 +35,8 @@ services:
         sync: false
       - key: SUPABASE_S3_REGION
         sync: false
-      - key: EMAIL_ENABLED
-        value: "True"
-      - key: EMAIL_HOST_USER
-        sync: false
-      - key: EMAIL_HOST_PASSWORD
+      # Correo por API HTTP de Brevo (Render bloquea el SMTP saliente).
+      - key: BREVO_API_KEY
         sync: false
       - key: DEFAULT_FROM_EMAIL
         sync: false

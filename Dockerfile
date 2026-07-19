@@ -38,4 +38,5 @@ EXPOSE 8000
 
 # Arranca: aplica migraciones y levanta Gunicorn.
 CMD sh -c "python manage.py migrate --noinput && \
-    gunicorn config.wsgi:application --bind 0.0.0.0:${PORT} --workers 3 --timeout 120"
+    gunicorn config.wsgi:application --bind 0.0.0.0:${PORT} \
+    --workers 2 --timeout 120 --max-requests 500 --max-requests-jitter 50"

@@ -123,4 +123,12 @@ def cron_tareas_diarias(request):
     token = request.headers.get("X-Cron-Token") or request.POST.get("token", "")
     if not settings.CRON_TOKEN or token != settings.CRON_TOKEN:
         return HttpResponseForbidden("Token inválido.")
-    return JsonResponse({"ok": True, "resultado": ejecutar_tareas_diarias()})
+    try:
+        return JsonResponse({"ok": True, "resultado": ejecutar_tareas_diarias()})
+    except Exception as exc:  # noqa: BLE001 - se reporta el error al cron
+        import logging
+
+        logging.getLogger("vatishe").exception("Error ejecutando tareas diarias")
+        return JsonResponse(
+            {"ok": False, "error": f"{type(exc).__name__}: {exc}"}, status=500
+        )

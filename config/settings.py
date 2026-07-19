@@ -57,6 +57,7 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     "storages",
+    "anymail",
 ]
 
 LOCAL_APPS = [
@@ -216,13 +217,21 @@ PAGINACION_POR_PAGINA = int(os.getenv("PAGINACION_POR_PAGINA", "20"))
 # --------------------------------------------------------------------------- #
 # Correo (Gmail SMTP con contraseña de aplicación)
 # --------------------------------------------------------------------------- #
-if env_bool("EMAIL_ENABLED", False):
+# Preferencia: API HTTP de Brevo (puerto 443) si hay clave — necesario en hosting
+# que bloquea el SMTP saliente (p. ej. Render). Si no, SMTP (local) o consola.
+BREVO_API_KEY = os.getenv("BREVO_API_KEY", "")
+if BREVO_API_KEY:
+    EMAIL_BACKEND = "anymail.backends.brevo.EmailBackend"
+    ANYMAIL = {"BREVO_API_KEY": BREVO_API_KEY}
+elif env_bool("EMAIL_ENABLED", False):
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
     EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
     EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
     EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
     EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+    # Timeout para que un SMTP lento/bloqueado no cuelgue el proceso (segundos).
+    EMAIL_TIMEOUT = int(os.getenv("EMAIL_TIMEOUT", "20"))
 else:
     # En desarrollo los correos se imprimen en la consola.
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

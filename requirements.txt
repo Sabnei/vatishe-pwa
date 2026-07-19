@@ -14,6 +14,9 @@ boto3>=1.34
 # --- Imágenes (compresión de comprobantes a <=1 MB) ---
 Pillow>=10.4
 
+# --- Correo por API HTTP (Brevo), para hosting que bloquea el SMTP saliente ---
+django-anymail>=10
+
 # --- Reportes PDF ---
 # WeasyPrint requiere librerías de sistema (libpango, libcairo, libgdk-pixbuf);
 # ver Dockerfile. En Windows/algunos entornos locales puede omitirse el PDF.
