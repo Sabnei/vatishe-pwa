@@ -1,4 +1,4 @@
-# --- VATISHE — imagen de producción -----------------------------------------
+# --- VATISHE - imagen de producción -----------------------------------------
 FROM python:3.12-slim
 
 # Evita prompts y buffering; salida de logs inmediata.

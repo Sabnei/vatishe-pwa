@@ -34,20 +34,20 @@
     </div>
     <div>
       <p class="form-label mb-0">Teléfono</p>
-      <p class="text-ink">{{ inquilino.telefono|default:"—" }}</p>
+      <p class="text-ink">{{ inquilino.telefono|default:"-" }}</p>
     </div>
     {% with perfil=inquilino.perfil_inquilino %}
     <div>
       <p class="form-label mb-0">Cédula</p>
-      <p class="text-ink">{{ perfil.cedula|default:"—" }}</p>
+      <p class="text-ink">{{ perfil.cedula|default:"-" }}</p>
     </div>
     <div>
       <p class="form-label mb-0">Teléfono alterno</p>
-      <p class="text-ink">{{ perfil.telefono_alterno|default:"—" }}</p>
+      <p class="text-ink">{{ perfil.telefono_alterno|default:"-" }}</p>
     </div>
     <div>
       <p class="form-label mb-0">Contacto de emergencia</p>
-      <p class="text-ink">{{ perfil.contacto_emergencia|default:"—" }}</p>
+      <p class="text-ink">{{ perfil.contacto_emergencia|default:"-" }}</p>
     </div>
     {% if perfil.notas %}
     <div>

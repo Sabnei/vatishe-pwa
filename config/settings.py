@@ -217,7 +217,7 @@ PAGINACION_POR_PAGINA = int(os.getenv("PAGINACION_POR_PAGINA", "20"))
 # --------------------------------------------------------------------------- #
 # Correo (Gmail SMTP con contraseña de aplicación)
 # --------------------------------------------------------------------------- #
-# Preferencia: API HTTP de Brevo (puerto 443) si hay clave — necesario en hosting
+# Preferencia: API HTTP de Brevo (puerto 443) si hay clave - necesario en hosting
 # que bloquea el SMTP saliente (p. ej. Render). Si no, SMTP (local) o consola.
 BREVO_API_KEY = os.getenv("BREVO_API_KEY", "")
 if BREVO_API_KEY:

@@ -160,7 +160,7 @@ class ComprobanteArchivoView(LoginRequiredMixin, View):
 
 
 # --------------------------------------------------------------------------- #
-# Administrador — verificación de comprobantes (RF-006)
+# Administrador - verificación de comprobantes (RF-006)
 # --------------------------------------------------------------------------- #
 class VerificarComprobantesListView(AdminRequeridoMixin, ListView):
     """Lista de abonos pendientes de verificación (RF-006, HU-03)."""
@@ -240,7 +240,7 @@ class VerificarComprobanteView(AdminRequeridoMixin, DetailView):
         enviar_correo(
             tipo=RegistroCorreo.Tipo.COMPROBANTE_RECHAZADO,
             destinatario=inquilino.email,
-            asunto="VATISHE — Comprobante rechazado",
+            asunto="VATISHE - Comprobante rechazado",
             cuerpo=cuerpo,
             clave_unicidad=f"rechazo:abono:{abono.pk}",
         )

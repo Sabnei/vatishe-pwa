@@ -198,7 +198,7 @@ class GestionAveriaDetailView(AdminRequeridoMixin, DetailView):
         enviar_correo(
             tipo=RegistroCorreo.Tipo.AVERIA_ACTUALIZADA,
             destinatario=inquilino.email,
-            asunto="VATISHE — Actualización de su avería",
+            asunto="VATISHE - Actualización de su avería",
             cuerpo=cuerpo,
             clave_unicidad=f"averia:{averia.pk}:estado:{averia.estado}",
         )

@@ -22,7 +22,7 @@
             <h2 class="font-display text-xl font-bold text-ink mb-1">{{ contrato_activo.apartamento.codigo }}</h2>
             <p class="text-sm text-ink-variant flex items-center gap-1">
               <span class="material-symbols-outlined" style="font-size:16px">calendar_today</span>
-              {{ contrato_activo.fecha_inicio|date:"d M Y" }} — {{ contrato_activo.fecha_vencimiento|date:"d M Y" }}
+              {{ contrato_activo.fecha_inicio|date:"d M Y" }} - {{ contrato_activo.fecha_vencimiento|date:"d M Y" }}
             </p>
           </div>
           <div class="text-right">
@@ -58,7 +58,7 @@
       {% for c in historial %}
         <div class="p-4 flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-ink">{{ c.fecha_inicio|date:"d M Y" }} — {{ c.fecha_vencimiento|date:"d M Y" }}</p>
+            <p class="text-sm font-medium text-ink">{{ c.fecha_inicio|date:"d M Y" }} - {{ c.fecha_vencimiento|date:"d M Y" }}</p>
             <p class="text-xs font-bold uppercase tracking-wide text-ink-variant">Finalizado</p>
           </div>
           <p class="text-sm font-bold text-ink-variant">{{ c.monto|colones }}</p>

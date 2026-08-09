@@ -38,7 +38,7 @@
       <div class="pt-3 border-t border-outline-variant space-y-1">
         <p class="text-sm text-ink flex items-center gap-1">
           <span class="material-symbols-outlined" style="font-size:16px">calendar_today</span>
-          {{ contrato.fecha_inicio|date:"d M Y" }} — {{ contrato.fecha_vencimiento|date:"d M Y" }}
+          {{ contrato.fecha_inicio|date:"d M Y" }} - {{ contrato.fecha_vencimiento|date:"d M Y" }}
         </p>
         {% if contrato.activo %}
           <div class="flex justify-between items-end pt-1">

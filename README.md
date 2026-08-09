@@ -1,4 +1,4 @@
-# VATISHE — PWA de gestión de cobros y pagos de alquiler
+# VATISHE - PWA de gestión de cobros y pagos de alquiler
 
 Aplicación web progresiva (PWA) para **VATISHE S.R.L.** que centraliza la gestión
 de cobros y pagos de alquiler de apartamentos: apartamentos, inquilinos, contratos,
@@ -79,7 +79,7 @@ python manage.py runserver
 ```
 
 > El `.env` con `DATABASE_URL` vacío usa **SQLite** y guarda los archivos en
-> `media/` y los correos en la **consola** — ideal para desarrollo sin credenciales.
+> `media/` y los correos en la **consola** - ideal para desarrollo sin credenciales.
 
 ## Variables de entorno
 
