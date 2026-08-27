@@ -57,7 +57,7 @@ class ConfiguracionSistema(ModeloBase):
         verbose_name_plural = _("configuración del sistema")
 
     def __str__(self):
-        return _("Configuración del sistema")
+        return str(_("Configuración del sistema")) # <--- Envuelve con str()
 
     def save(self, *args, **kwargs):
         # Fuerza el patrón singleton.
