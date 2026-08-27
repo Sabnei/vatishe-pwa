@@ -33,7 +33,7 @@ class ConfiguracionSistema(ModeloBase):
         decimal_places=2,
         default=Decimal("10.00"),
         validators=[MinValueValidator(Decimal("0"))],
-        help_text=_("Porcentaje aplicado sobre el saldo pendiente al vencer (RF-007)."),
+        help_text=_("Porcentaje aplicado sobre el saldo pendiente al vencer."),
     )
     monto_multa_fijo = models.DecimalField(
         _("monto fijo de multa"),
@@ -46,7 +46,7 @@ class ConfiguracionSistema(ModeloBase):
     dias_anticipacion_recordatorio = models.PositiveIntegerField(
         _("días de anticipación del recordatorio"),
         default=3,
-        help_text=_("Días antes del vencimiento para enviar el recordatorio (RF-010)."),
+        help_text=_("Días antes del vencimiento para enviar el recordatorio."),
     )
     nombre_empresa = models.CharField(
         _("nombre de la empresa"), max_length=150, default="VATISHE S.R.L."
