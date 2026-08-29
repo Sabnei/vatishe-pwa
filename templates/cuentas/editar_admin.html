@@ -1,0 +1,66 @@
+{% extends "base_admin.html" %}
+{% block titulo %}Editar administrador{% endblock %}
+
+{% block contenido %}
+<div class="space-y-4">
+  <div class="flex items-center gap-2">
+    <a href="{% url 'cuentas:gestion_admins' %}" class="text-ink-variant hover:text-primary flex items-center">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+    <h1 class="font-display text-2xl font-bold text-primary">Editar administrador</h1>
+  </div>
+
+  <div class="card p-5 flex items-center gap-4">
+    <div class="w-16 h-16 rounded-full bg-primary flex items-center justify-center shrink-0">
+      <span class="material-symbols-outlined text-primary-fg" style="font-size:36px">admin_panel_settings</span>
+    </div>
+    <div class="min-w-0">
+      <p class="font-display text-lg font-bold text-ink truncate">{{ administrador.get_full_name|default:administrador.username }}</p>
+      <p class="text-sm text-ink-variant truncate">{{ administrador.email }}</p>
+      {% if administrador.is_active %}
+        <span class="chip-success mt-1">Activo</span>
+      {% else %}
+        <span class="chip-neutral mt-1">Inactivo</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <form method="post" class="card p-5">
+    {% csrf_token %}
+    {% include "partials/campos_form.html" with form=form %}
+    <button type="submit" class="btn-primary w-full h-12 mt-2">Guardar cambios</button>
+  </form>
+
+  {# Acciones sensibles: no se muestran sobre la propia cuenta ni sobre el último admin. #}
+  {% if administrador.pk != user.pk and not es_ultimo_admin %}
+  <div class="space-y-2">
+    <form method="post" action="{% url 'cuentas:degradar_admin' administrador.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="btn-secondary w-full"
+              onclick="return confirm('¿Quitar el rol de administrador y dejarlo como inquilino?');">
+        <span class="material-symbols-outlined" style="font-size:20px">shield_lock</span>
+        Quitar permisos de administrador
+      </button>
+    </form>
+    <form method="post" action="{% url 'cuentas:cambiar_estado_usuario' administrador.pk %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.path }}">
+      {% if administrador.is_active %}
+        <button type="submit" class="btn-secondary w-full text-danger border-danger hover:bg-danger/5"
+                onclick="return confirm('¿Desactivar esta cuenta de administrador?');">
+          <span class="material-symbols-outlined" style="font-size:20px">block</span> Desactivar cuenta
+        </button>
+      {% else %}
+        <button type="submit" class="btn-secondary w-full">
+          <span class="material-symbols-outlined" style="font-size:20px">check_circle</span> Reactivar cuenta
+        </button>
+      {% endif %}
+    </form>
+  </div>
+  {% elif administrador.pk == user.pk %}
+    <p class="text-xs text-ink-variant px-1">Es su propia cuenta: no puede desactivarla ni quitarse el rol.</p>
+  {% else %}
+    <p class="text-xs text-ink-variant px-1">Es el único administrador activo: cree otro antes de desactivarlo.</p>
+  {% endif %}
+</div>
+{% endblock %}

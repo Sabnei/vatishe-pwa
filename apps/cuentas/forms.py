@@ -169,6 +169,130 @@ class EditarInquilinoForm(_EstiloWidgetsMixin, forms.ModelForm):
         return usuario
 
 
+class NuevoAdminForm(_EstiloWidgetsMixin, forms.ModelForm):
+    """Alta de un usuario Administrador por otro Administrador (RF-001).
+
+    Permite crear administradores desde la app, sin pasar por el admin de Django.
+    La casilla ``acceso_django`` concede además acceso al panel de Django.
+    """
+
+    password1 = forms.CharField(
+        label="Contraseña", widget=forms.PasswordInput, strip=False
+    )
+    password2 = forms.CharField(
+        label="Confirmar contraseña", widget=forms.PasswordInput, strip=False
+    )
+    acceso_django = forms.BooleanField(
+        label="Acceso al panel de Django (administración avanzada)",
+        required=False,
+        help_text="Solo si necesita entrar a /admin. No es necesario para usar la app.",
+    )
+
+    class Meta:
+        model = Usuario
+        fields = ["username", "first_name", "last_name", "email", "telefono"]
+        labels = {
+            "username": "Usuario",
+            "first_name": "Nombre",
+            "last_name": "Apellidos",
+            "email": "Correo electrónico",
+            "telefono": "Teléfono",
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["email"].required = True
+        self.fields["first_name"].required = True
+        self._estilizar()
+
+    def clean_email(self):
+        email = self.cleaned_data["email"].strip().lower()
+        if Usuario.objects.filter(email__iexact=email).exists():
+            raise ValidationError("Ya existe un usuario con este correo.")
+        return email
+
+    def clean_password2(self):
+        p1 = self.cleaned_data.get("password1")
+        p2 = self.cleaned_data.get("password2")
+        if p1 and p2 and p1 != p2:
+            raise ValidationError("Las contraseñas no coinciden.")
+        validate_password(p2)
+        return p2
+
+    def save(self, commit=True):
+        usuario = super().save(commit=False)
+        usuario.rol = Usuario.Rol.ADMIN
+        acceso_django = self.cleaned_data.get("acceso_django", False)
+        usuario.is_staff = acceso_django
+        usuario.is_superuser = acceso_django
+        usuario.set_password(self.cleaned_data["password1"])
+        if commit:
+            usuario.save()
+        return usuario
+
+
+class EditarAdminForm(_EstiloWidgetsMixin, forms.ModelForm):
+    """Edición de los datos de un Administrador por otro Administrador."""
+
+    acceso_django = forms.BooleanField(
+        label="Acceso al panel de Django (administración avanzada)", required=False
+    )
+
+    class Meta:
+        model = Usuario
+        fields = ["username", "first_name", "last_name", "email", "telefono"]
+        labels = {
+            "username": "Usuario",
+            "first_name": "Nombre",
+            "last_name": "Apellidos",
+            "email": "Correo electrónico",
+            "telefono": "Teléfono",
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["email"].required = True
+        self.fields["first_name"].required = True
+        self.fields["acceso_django"].initial = self.instance.is_staff
+        self._estilizar()
+
+    def clean_email(self):
+        email = self.cleaned_data["email"].strip().lower()
+        if (
+            Usuario.objects.filter(email__iexact=email)
+            .exclude(pk=self.instance.pk)
+            .exists()
+        ):
+            raise ValidationError("Ya existe otro usuario con este correo.")
+        return email
+
+    def save(self, commit=True):
+        usuario = super().save(commit=False)
+        acceso_django = self.cleaned_data.get("acceso_django", False)
+        usuario.is_staff = acceso_django
+        usuario.is_superuser = acceso_django
+        if commit:
+            usuario.save()
+        return usuario
+
+
+class PromoverAdminForm(forms.Form):
+    """Convierte un inquilino existente en Administrador (conserva su perfil)."""
+
+    usuario = forms.ModelChoiceField(
+        label="Inquilino a promover",
+        queryset=Usuario.objects.none(),
+        empty_label="Seleccione un usuario",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["usuario"].queryset = Usuario.objects.filter(
+            rol=Usuario.Rol.INQUILINO, is_active=True
+        ).order_by("first_name", "last_name", "username")
+        self.fields["usuario"].widget.attrs.setdefault("class", _INPUT)
+
+
 class MiPerfilForm(_EstiloWidgetsMixin, forms.ModelForm):
     """Edición del propio perfil por el Inquilino (datos de contacto)."""
 

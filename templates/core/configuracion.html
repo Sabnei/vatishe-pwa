@@ -1,0 +1,40 @@
+{% extends "base_admin.html" %}
+{% load vatishe_extras %}
+{% block titulo %}Configuración{% endblock %}
+
+{% block contenido %}
+<div class="space-y-4">
+  <div class="flex items-center gap-2">
+    <a href="{% url 'core:inicio' %}" class="text-ink-variant hover:text-primary flex items-center">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+    <div>
+      <h1 class="font-display text-2xl font-bold text-primary">Configuración del sistema</h1>
+      <p class="text-sm text-ink-variant">Parámetros globales de multas y recordatorios</p>
+    </div>
+  </div>
+
+  {# Resumen de la regla vigente para evitar confusiones entre monto fijo y porcentaje. #}
+  <div class="card p-4 bg-surface-high">
+    <p class="form-label mb-1">Regla de multa vigente</p>
+    {% if object.usa_monto_fijo %}
+      <p class="text-ink font-semibold">Monto fijo de {{ object.monto_multa_fijo|colones }} por cobro vencido.</p>
+    {% else %}
+      <p class="text-ink font-semibold">{{ object.porcentaje_multa }} % sobre el saldo pendiente al vencer.</p>
+    {% endif %}
+    <p class="text-xs text-ink-variant mt-1">
+      Recordatorio por correo {{ object.dias_anticipacion_recordatorio }} día{{ object.dias_anticipacion_recordatorio|pluralize }} antes del vencimiento.
+    </p>
+  </div>
+
+  <form method="post" class="card p-5">
+    {% csrf_token %}
+    {% include "partials/campos_form.html" with form=form %}
+    <p class="text-xs text-ink-variant mb-3">
+      Los cambios aplican a las multas y recordatorios que se generen a partir de ahora;
+      las multas ya aplicadas no se recalculan.
+    </p>
+    <button type="submit" class="btn-primary w-full h-12">Guardar configuración</button>
+  </form>
+</div>
+{% endblock %}

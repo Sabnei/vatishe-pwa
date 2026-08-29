@@ -8,6 +8,11 @@ app_name = "core"
 
 urlpatterns = [
     path("", views.inicio, name="inicio"),
+    path(
+        "configuracion/",
+        views.ConfiguracionSistemaView.as_view(),
+        name="configuracion",
+    ),
     path("proximamente/", views.proximamente, name="proximamente"),
     path("offline/", views.offline, name="offline"),
     path("ping/", views.ping, name="ping"),

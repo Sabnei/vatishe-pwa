@@ -141,6 +141,21 @@
         </span>
         <span class="material-symbols-outlined text-outline">chevron_right</span>
       </a>
+      <a href="{% url 'cuentas:gestion_admins' %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
+        <span class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary">admin_panel_settings</span>
+          <span class="font-semibold text-ink">Administradores</span>
+        </span>
+        <span class="material-symbols-outlined text-outline">chevron_right</span>
+      </a>
+      <a href="{% url 'core:configuracion' %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
+        <span class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary">tune</span>
+          <span class="font-semibold text-ink">Configuración del sistema</span>
+        </span>
+        <span class="material-symbols-outlined text-outline">chevron_right</span>
+      </a>
+      {% if user.is_staff %}
       <a href="{% url 'admin:index' %}" class="flex items-center justify-between p-4 hover:bg-surface-low">
         <span class="flex items-center gap-3">
           <span class="material-symbols-outlined text-primary">settings</span>
@@ -148,6 +163,7 @@
         </span>
         <span class="material-symbols-outlined text-outline">chevron_right</span>
       </a>
+      {% endif %}
     </div>
   </section>
 </div>

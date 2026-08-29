@@ -1,0 +1,79 @@
+{% extends "base_admin.html" %}
+{% block titulo %}Administradores{% endblock %}
+
+{% block contenido %}
+<div class="space-y-4">
+
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="font-display text-2xl font-bold text-primary">Administradores</h1>
+      <p class="text-sm text-ink-variant">{{ total_activos }} activo{{ total_activos|pluralize }}</p>
+    </div>
+    <a href="{% url 'cuentas:nuevo_admin' %}" class="btn-primary">
+      <span class="material-symbols-outlined" style="font-size:20px">person_add</span>
+      Nuevo
+    </a>
+  </div>
+
+  {# Pestañas entre inquilinos y administradores. #}
+  <div class="flex gap-2">
+    <a href="{% url 'cuentas:gestion_usuarios' %}" class="btn-secondary flex-1 justify-center">Inquilinos</a>
+    <a href="{% url 'cuentas:gestion_admins' %}" class="btn-primary flex-1 justify-center">Administradores</a>
+  </div>
+
+  {# Búsqueda #}
+  <form method="get">
+    <div class="relative">
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" style="font-size:20px">search</span>
+      <input type="text" name="q" value="{{ q }}" placeholder="Buscar por nombre, usuario o correo"
+             class="form-input pl-10">
+    </div>
+  </form>
+
+  {# Listado #}
+  <div class="card divide-y divide-outline-variant/60">
+    {% for adm in administradores %}
+      <a href="{% url 'cuentas:editar_admin' adm.pk %}" class="flex items-center gap-3 p-4 hover:bg-surface-low">
+        <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary shrink-0">
+          <span class="material-symbols-outlined">admin_panel_settings</span>
+        </div>
+        <div class="min-w-0 flex-1">
+          <p class="font-semibold text-ink truncate">
+            {{ adm.get_full_name|default:adm.username }}{% if adm.pk == user.pk %} <span class="text-xs text-ink-variant">(usted)</span>{% endif %}
+          </p>
+          <p class="text-sm text-ink-variant truncate">{{ adm.email }}</p>
+        </div>
+        {% if adm.is_active %}
+          <span class="chip-success">Activo</span>
+        {% else %}
+          <span class="chip-neutral">Inactivo</span>
+        {% endif %}
+      </a>
+    {% empty %}
+      <div class="p-8 text-center text-ink-variant">
+        <span class="material-symbols-outlined mb-2" style="font-size:36px">group_off</span>
+        <p class="text-sm">No hay administradores que coincidan con la búsqueda.</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  {# Promover a un inquilino existente sin crear otra cuenta. #}
+  <div class="card p-5">
+    <p class="form-label">Convertir un inquilino en administrador</p>
+    <form method="post" action="{% url 'cuentas:promover_admin' %}" class="space-y-3">
+      {% csrf_token %}
+      {{ form_promover.usuario }}
+      <button type="submit" class="btn-secondary w-full"
+              onclick="return confirm('¿Dar permisos de administrador a este usuario?');">
+        <span class="material-symbols-outlined" style="font-size:20px">shield_person</span>
+        Dar permisos de administrador
+      </button>
+    </form>
+    <p class="mt-2 text-xs text-ink-variant">
+      El usuario conserva sus datos, pero dejará de ver el panel de inquilino.
+    </p>
+  </div>
+
+  {% include "partials/paginacion.html" %}
+</div>
+{% endblock %}

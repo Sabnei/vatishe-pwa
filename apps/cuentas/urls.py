@@ -92,8 +92,27 @@ urlpatterns = [
     ),
     path(
         "usuarios/<int:pk>/estado/",
-        views.CambiarEstadoInquilinoView.as_view(),
-        name="cambiar_estado_inquilino",
+        views.CambiarEstadoUsuarioView.as_view(),
+        name="cambiar_estado_usuario",
+    ),
+
+    # --- Administradores (Admin) ---
+    path("administradores/", views.GestionAdminsView.as_view(), name="gestion_admins"),
+    path("administradores/nuevo/", views.NuevoAdminView.as_view(), name="nuevo_admin"),
+    path(
+        "administradores/promover/",
+        views.PromoverAdminView.as_view(),
+        name="promover_admin",
+    ),
+    path(
+        "administradores/<int:pk>/editar/",
+        views.EditarAdminView.as_view(),
+        name="editar_admin",
+    ),
+    path(
+        "administradores/<int:pk>/degradar/",
+        views.DegradarAdminView.as_view(),
+        name="degradar_admin",
     ),
 
     # --- Perfil propio (Inquilino) ---

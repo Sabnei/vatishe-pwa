@@ -1,11 +1,18 @@
 """Vistas del núcleo: punto de entrada y despacho por rol."""
 
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.views.generic import UpdateView
+
+from apps.core.forms import ConfiguracionSistemaForm
+from apps.core.mixins import AdminRequeridoMixin
+from apps.core.models import ConfiguracionSistema
 
 
 @login_required
@@ -78,6 +85,26 @@ def _dashboard_inquilino(request):
         ),
     }
     return render(request, "core/dashboard_inquilino.html", contexto)
+
+
+class ConfiguracionSistemaView(AdminRequeridoMixin, UpdateView):
+    """Edición de los parámetros globales por el Administrador desde la app.
+
+    Evita tener que entrar al admin de Django para ajustar la multa y el
+    recordatorio (RF-010). La configuración es un singleton (pk=1).
+    """
+
+    model = ConfiguracionSistema
+    form_class = ConfiguracionSistemaForm
+    template_name = "core/configuracion.html"
+    success_url = reverse_lazy("core:configuracion")
+
+    def get_object(self, queryset=None):
+        return ConfiguracionSistema.cargar()
+
+    def form_valid(self, form):
+        messages.success(self.request, "Configuración guardada correctamente.")
+        return super().form_valid(form)
 
 
 @login_required

@@ -63,7 +63,7 @@
     <a href="{% url 'cuentas:editar_inquilino' inquilino.pk %}" class="btn-primary w-full">
       <span class="material-symbols-outlined" style="font-size:20px">edit</span> Editar datos
     </a>
-    <form method="post" action="{% url 'cuentas:cambiar_estado_inquilino' inquilino.pk %}">
+    <form method="post" action="{% url 'cuentas:cambiar_estado_usuario' inquilino.pk %}">
       {% csrf_token %}
       <input type="hidden" name="next" value="{{ request.path }}">
       {% if inquilino.is_active %}

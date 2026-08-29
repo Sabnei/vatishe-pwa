@@ -1,5 +1,5 @@
 # --- Núcleo ---
-Django>=5.1,<5.2
+Django>=5.2.7,<6.0
 python-dotenv>=1.0
 
 # --- Base de datos (Supabase / PostgreSQL) ---

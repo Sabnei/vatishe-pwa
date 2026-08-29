@@ -15,6 +15,14 @@
     </a>
   </div>
 
+  {# Pestañas entre inquilinos y administradores. #}
+  <div class="flex gap-2">
+    <a href="{% url 'cuentas:gestion_usuarios' %}" class="btn-primary flex-1 justify-center">Inquilinos</a>
+    <a href="{% url 'cuentas:gestion_admins' %}" class="btn-secondary flex-1 justify-center">
+      Administradores{% if total_admins %} ({{ total_admins }}){% endif %}
+    </a>
+  </div>
+
   {# Búsqueda y filtro #}
   <form method="get" class="space-y-2">
     <div class="relative">
